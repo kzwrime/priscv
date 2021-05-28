@@ -1,0 +1,92 @@
+`define MemPortIO input clk, input reset, input valid, input good, input[31:0] addr,
+
+module IMem (
+  `MemPortIO
+  output [31:0] instr,
+  output ready
+);
+  reg[31:0] I_MEM[0:255];
+  assign instr = I_MEM[addr[9:2]];
+endmodule
+
+module DMemPort (
+  `MemPortIO
+  input [31:0] writeData,
+  input memRead,
+  input memWrite,
+  input maskMode,
+  input sext, // 符号扩展
+  output reg [31:0] readData,
+  
+  output reg [31:0] requestAddr,
+  output reg [31:0] requestWriteData,
+  output reg [1:0]  requestOperation,  // 00:read, 01:write, 10:read-write
+  output reg        requestValid,
+  input         responseValid,
+  input  [31:0] responseData
+);
+  always @(*) begin
+    requestAddr <= addr;
+    requestWriteData <= 0;
+    requestOperation <= 2'b11;
+    requestValid <= 0;
+    if(valid & (memRead | memWrite)) begin
+      if(memRead & memWrite) begin
+        $display("~~~DMem Port error~~~");
+      end
+      else begin
+        requestValid <= 1;
+        requestAddr  <= addr;
+        if(memWrite) requestOperation <= 2'b10;
+        else requestOperation <= 2'b00;
+      end
+    end
+    else requestValid <= 0;
+    if(responseValid) begin
+      if(memWrite) begin
+        if(maskMode == 2'b00) begin
+          
+        end else if(maskMode == 2'b01) begin
+          
+        end else if(maskMode == 2'b10) begin
+          
+        end
+      end
+    end
+  end
+endmodule
+
+module DualPortedCombinMemory(
+  input clk,
+  input reset,
+  // MemPortBusIO
+  input  [31:0] requestAddr,
+  input  [31:0] requestWriteData,
+  input  [1:0]  requestOperation,  // 00:read, 01:write, 10:read-write
+  input         requestValid,
+  output reg    responseValid,
+  output reg [31:0] responseData
+);
+  reg[31:0] MEM[0:255];
+
+  // only read or read-write is valid
+  always @(*) begin
+    if(requestValid) begin
+      if(requestOperation === 2'b01) begin
+        responseValid <= 0;
+        $display("~~~Mem backend error~~~");
+      end
+      else begin
+        // read or read-write
+        responseData  <= MEM[requestAddr[9:2]];
+        responseValid <= 1;
+      end
+    end
+    else responseValid <= 0;
+  end
+  always @(posedge clk) begin
+    if(requestValid && requestOperation === "10") begin
+      MEM[requestAddr[9:2]] <= requestWriteData;
+    end
+  end
+endmodule

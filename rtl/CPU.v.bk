@@ -1,0 +1,322 @@
+`include "rtl/ALU.v"
+`include "rtl/ALUCtrl.v"
+`include "rtl/Decode.v"
+`include "rtl/Defines.v"
+`include "rtl/ForwardingUnit.v"
+`include "rtl/Hazard.v"
+// `include "rtl/Memory.v"
+`include "rtl/RegFile.v"
+`include "rtl/StageReg.v"
+`include "rtl/Utils.v"
+
+module PCPU(
+  input  clk,
+  input  reset,
+
+  input  [31:0] IMEM_instr,
+  input  IMEM_good,
+  output IMEM_valid,
+
+  input  [31:0] DMEM_readData,
+  input  DMEM_good,
+  output DMEM_valid,
+  output DMEM_memRead,
+  output DMEM_memWrite,
+  output DMEM_sext,
+  output [1:0] DMEM_maskMode,
+  output [31:0] DMEM_writeData
+);
+
+  parameter pcReset = 32'b0;
+
+  `REG_INIT(pc, 32, pcReset)
+  `REG_INIT(cycleCount, 32, 0)
+  `REG_UPDATE(cycleCount, cycleCount+1)
+
+  // decode
+  wire [31:0] Decode_instr;
+  wire        Decode_branch;
+  wire [1:0]  Decode_jump;
+  wire        Decode_memRead;
+  wire        Decode_memWrite;
+  wire        Decode_regWrite;
+  wire        Decode_toReg;
+  wire [1:0]  Decode_resultSel;
+  wire        Decode_aluSrc;
+  wire        Decode_pcAdd;
+  wire [6:0]  Decode_types;
+  wire [1:0]  Decode_aluCtrlOp;
+  wire        Decode_validInst;
+  wire [32:0] Decode_imm;
+
+  // regfile
+  wire        RegFile_wen;
+  wire [4:0]  RegFile_regRAddr1;
+  wire [4:0]  RegFile_regRAddr2;
+  wire [4:0]  RegFile_regWAddr;
+  wire [31:0] RegFile_regWData;
+  wire [31:0] RegFile_regRData1;
+  wire [31:0] RegFile_regRData2;
+
+  // ALUCtrl
+  wire [2:0]  ALUCtrl_funct3;
+  wire [7:0]  ALUCtrl_funct7;
+  wire [1:0]  ALUCtrl_aluCtrlOp;
+  wire [3:0]  ALUCtrl_aluOp;
+
+  // ALU
+  wire [31:0] ALU_aluIn1;
+  wire [31:0] ALU_aluIn2;
+  wire [ 3:0] ALU_aluOp;
+  wire [31:0] ALU_aluOut;
+
+  wire [31:0] pcPlus4;
+
+  wire ID_EX_CTRL_flush;
+  wire ID_EX_CTRL_valid;
+
+  wire EX_MEM_CTRL_flush;
+  wire EX_MEM_CTRL_valid;
+
+  wire MEM_WB_CTRL_CTRL_flush;
+  wire MEM_WB_CTRL_CTRL_valid;
+
+  wire IF_ID_flush;
+  wire IF_ID_valid;
+
+  wire ID_EX_flush;
+  wire ID_EX_valid;
+
+  wire EX_MEM_flush;
+  wire EX_MEM_valid;
+
+  wire MEM_WB_flush;
+  wire MEM_WB_valid;
+  
+	`WIRE(ID_EX_CTRL_in_branch,     1)
+	`WIRE(ID_EX_CTRL_in_jump,       2)
+	`WIRE(ID_EX_CTRL_in_resultSel,  2)
+	`WIRE(ID_EX_CTRL_in_aluSrc,     1)
+	`WIRE(ID_EX_CTRL_in_pcAdd,      1)
+	`WIRE(ID_EX_CTRL_in_types,      7)
+	`WIRE(ID_EX_CTRL_in_aluCtrlOp,  2)
+                                   
+	`WIRE(ID_EX_CTRL_in_memRead,    1)
+	`WIRE(ID_EX_CTRL_in_memWrite,   1)
+	`WIRE(ID_EX_CTRL_in_taken,      1)
+	`WIRE(ID_EX_CTRL_in_maskmode,   2)
+	`WIRE(ID_EX_CTRL_in_sext,       1)
+                                    
+	`WIRE(ID_EX_CTRL_in_regWrite,   1)
+	`WIRE(ID_EX_CTRL_in_toReg,      1)
+
+  assign ID_EX_CTRL_in_resultSel  = Decode_resultSel;       
+  assign ID_EX_CTRL_in_aluSrc     = Decode_aluSrc;   
+  assign ID_EX_CTRL_in_pcAdd      = Decode_pcAdd;   
+  assign ID_EX_CTRL_in_types      = Decode_types;   
+  assign ID_EX_CTRL_in_aluCtrlOp  = Decode_aluCtrlOp;       
+  assign ID_EX_CTRL_in_memRead    = Decode_memRead;     
+  assign ID_EX_CTRL_in_memWrite   = Decode_memWrite;     
+  assign ID_EX_CTRL_in_taken      = Decode_taken;   
+  assign ID_EX_CTRL_in_maskmode   = IF_ID_out_instr[13:12];     
+  assign ID_EX_CTRL_in_sext       = IF_ID_out_instr[14];
+  assign ID_EX_CTRL_in_regWrite   = Decode_regWrite;     
+  assign ID_EX_CTRL_in_toReg      = Decode_toReg;   
+
+	`WIRE(EX_MEM_CTRL_in_memRead,   1)
+	`WIRE(EX_MEM_CTRL_in_memWrite,  1)
+	`WIRE(EX_MEM_CTRL_in_taken,     1)
+	`WIRE(EX_MEM_CTRL_in_maskmode,  2)
+	`WIRE(EX_MEM_CTRL_in_sext,      1)
+                                 
+	`WIRE(EX_MEM_CTRL_in_regWrite,  1)
+	`WIRE(EX_MEM_CTRL_in_toReg,     1)
+
+  assign EX_MEM_CTRL_in_memRead   = ID_EX_CTRL_out_memRead;        
+  assign EX_MEM_CTRL_in_memWrite  = ID_EX_CTRL_out_memWrite;      
+  assign EX_MEM_CTRL_in_taken     = ID_EX_CTRL_out_taken;  
+  assign EX_MEM_CTRL_in_maskmode  = ID_EX_CTRL_out_maskmode;      
+  assign EX_MEM_CTRL_in_sext      = ID_EX_CTRL_out_sext;  
+  assign EX_MEM_CTRL_in_regWrite  = ID_EX_CTRL_out_regWrite;      
+  assign EX_MEM_CTRL_in_toReg     = ID_EX_CTRL_out_toReg;  
+  
+	`WIRE(MEM_WB_CTRL_in_regWrite,   1)
+	`WIRE(MEM_WB_CTRL_in_toReg,      1)
+
+	assign MEM_WB_CTRL_in_regWrite  = EX_MEM_CTRL_out_regWrite;
+	assign MEM_WB_CTRL_in_toReg     = EX_MEM_CTRL_out_toReg;
+
+	`WIRE(IF_ID_in_instr,          32)
+	`WIRE(IF_ID_in_pc,             32)
+	`WIRE(IF_ID_in_pcPlus4,        32)
+
+  assign IF_ID_in_instr           = IMEM_instr;             
+  assign IF_ID_in_pc              = pc;
+  assign IF_ID_in_pcPlus4         = pcPlus4;            
+                                 
+	`WIRE(ID_EX_in_writereg,       5)
+	`WIRE(ID_EX_in_funct7,         7)
+	`WIRE(ID_EX_in_funct3,         3)
+	`WIRE(ID_EX_in_imm,            32)
+	`WIRE(ID_EX_in_readdata2,      32)
+	`WIRE(ID_EX_in_readdata1,      32)
+	`WIRE(ID_EX_in_pc,             32)
+	`WIRE(ID_EX_in_pcplusfour,     32)
+	`WIRE(ID_EX_in_rs1,            5)
+	`WIRE(ID_EX_in_rs2,            5)
+
+  assign ID_EX_in_writereg        = IF_ID_out_instr[11:7];
+  assign ID_EX_in_funct7          = IF_ID_out_instr[31:25];
+  assign ID_EX_in_funct3          = IF_ID_out_instr[14:12];
+  assign ID_EX_in_imm             = Decode_imm;
+  assign ID_EX_in_readdata2       = RegFile_regRData1;
+  assign ID_EX_in_readdata1       = RegFile_regRData2;
+  assign ID_EX_in_pc              = IF_ID_out_pc;
+  assign ID_EX_in_pcplusfour      = IF_ID_out_pcPlus4;
+  assign ID_EX_in_rs1             = IF_ID_out_instr[19:15];
+  assign ID_EX_in_rs2             = IF_ID_out_instr[24:20];
+
+	`WIRE(EX_MEM_in_readData2,     5)
+	`WIRE(EX_MEM_in_result,        32)
+	`WIRE(EX_MEM_in_nextPC,        32)
+
+  // assign EX_MEM_in_readData2      = 
+  // assign EX_MEM_in_result         = 
+  // assign EX_MEM_in_nextPC         = 
+  
+	`WIRE(MEM_WB_in_writeReg,      5)
+	`WIRE(MEM_WB_in_result,        32)
+	`WIRE(MEM_WB_in_readData,      32)
+
+  // -------------------------------
+
+	`WIRE(ID_EX_CTRL_out_branch,     1)
+	`WIRE(ID_EX_CTRL_out_jump,       2)
+	`WIRE(ID_EX_CTRL_out_resultSel,  2)
+	`WIRE(ID_EX_CTRL_out_aluSrc,     1)
+	`WIRE(ID_EX_CTRL_out_pcAdd,      1)
+	`WIRE(ID_EX_CTRL_out_types,      7)
+	`WIRE(ID_EX_CTRL_out_aluCtrlOp,  2)
+                                   
+	`WIRE(ID_EX_CTRL_out_memRead,    1)
+	`WIRE(ID_EX_CTRL_out_memWrite,   1)
+	`WIRE(ID_EX_CTRL_out_taken,      1)
+	`WIRE(ID_EX_CTRL_out_maskmode,   2)
+	`WIRE(ID_EX_CTRL_out_sext,       1)
+                                    
+	`WIRE(ID_EX_CTRL_out_regWrite,   1)
+	`WIRE(ID_EX_CTRL_out_toReg,      1)
+                                 
+	`WIRE(EX_MEM_CTRL_out_memRead,   1)
+	`WIRE(EX_MEM_CTRL_out_memWrite,  1)
+	`WIRE(EX_MEM_CTRL_out_taken,     1)
+	`WIRE(EX_MEM_CTRL_out_maskmode,  2)
+	`WIRE(EX_MEM_CTRL_out_sext,      1)
+                                 
+	`WIRE(EX_MEM_CTRL_out_regWrite,  1)
+	`WIRE(EX_MEM_CTRL_out_toReg,     1)
+                                 
+	`WIRE(MEM_WB_CTRL_out_regWrite,  1)
+	`WIRE(MEM_WB_CTRL_out_toReg,     1)
+                                 
+	`WIRE(IF_ID_out_instr,         32)
+	`WIRE(IF_ID_out_pc,             32)
+	`WIRE(IF_ID_out_pcPlus4,        32)
+                                 
+	`WIRE(ID_EX_out_writereg,       5)
+	`WIRE(ID_EX_out_funct7,         7)
+	`WIRE(ID_EX_out_funct3,         3)
+	`WIRE(ID_EX_out_imm,            32)
+	`WIRE(ID_EX_out_readdata2,      32)
+	`WIRE(ID_EX_out_readdata1,      32)
+	`WIRE(ID_EX_out_pc,             32)
+	`WIRE(ID_EX_out_pcplusfour,     32)
+	`WIRE(ID_EX_out_rs1,            5)
+	`WIRE(ID_EX_out_rs2,            5)
+                                 
+	`WIRE(EX_MEM_out_readData2,     5)
+	`WIRE(EX_MEM_out_result,        32)
+	`WIRE(EX_MEM_out_nextPC,        32)
+                                 
+	`WIRE(MEM_WB_out_writeReg,      5)
+	`WIRE(MEM_WB_out_result,        32)
+	`WIRE(MEM_WB_out_readData,      32)
+                                 
+  Decode  U_Decode( Decode_instr,
+                    Decode_branch,
+                    Decode_jump,
+                    Decode_memRead,
+                    Decode_memWrite,
+                    Decode_regWrite,
+                    Decode_toReg,
+                    Decode_resultSel,
+                    Decode_aluSrc,
+                    Decode_pcAdd,
+                    Decode_types,
+                    Decode_aluCtrlOp,
+                    Decode_validInst,
+                    Decode_imm);
+
+  RegFile U_RegFile(clk,
+                    reset,
+                    RegFile_wen,
+                    RegFile_regRAddr1,
+                    RegFile_regRAddr2,
+                    RegFile_regWAddr,
+                    RegFile_regWData,
+                    RegFile_regRData1,
+                    RegFile_regRData2);
+
+  ALUCtrl U_ALUCtrl(ALUCtrl_funct3,
+                    ALUCtrl_funct7,
+                    ALUCtrl_aluCtrlOp,
+                    ALUCtrl_aluOp);
+
+  ALU     U_ALU(    ALU_aluIn1,
+                    ALU_aluIn2,
+                    ALU_aluOp,
+                    ALU_aluOut);
+
+  Adder   U_PCPlus4(pc, 32'd4, pcPlus4);
+  Adder   U_BranchAdd();
+  HazardUnit      U_HazardUnit();
+  ForwardingUnit  U_ForwardingUnit();
+
+  IF_ID       U_IF_ID();
+  ID_EX       U_ID_EX();
+  EX_MEM      U_EX_MEM();
+  MEM_WB      U_MEM_WB();
+  ID_EX_CTRL  U_ID_EX_CTRL(clk, reset, ID_EX_CTRL_flush, ID_EX_CTRL_valid,
+                            `COPYIO2(ID_EX_CTRL, branch,     1),
+                            `COPYIO2(ID_EX_CTRL, jump,       2),
+                            `COPYIO2(ID_EX_CTRL, resultSel,  2),
+                            `COPYIO2(ID_EX_CTRL, aluSrc,     1),
+                            `COPYIO2(ID_EX_CTRL, pcAdd,      1),
+                            `COPYIO2(ID_EX_CTRL, types,      7),
+                            `COPYIO2(ID_EX_CTRL, aluCtrlOp,  2),
+                            `COPYIO2(ID_EX_CTRL, memRead,    1),
+                            `COPYIO2(ID_EX_CTRL, memWrite,   1),
+                            `COPYIO2(ID_EX_CTRL, taken,      1),
+                            `COPYIO2(ID_EX_CTRL, maskmode,   2),
+                            `COPYIO2(ID_EX_CTRL, sext,       1),
+                            `COPYIO2(ID_EX_CTRL, regWrite,   1),
+                            `COPYIO2(ID_EX_CTRL, toReg,      1)    
+  );
+  EX_MEM_CTRL U_EX_MEM_CTRL(clk, reset, EX_MEM_CTRL_flush, EX_MEM_CTRL_valid,
+                            `COPYIO2(EX_MEM_CTRL, memRead,    1),
+                            `COPYIO2(EX_MEM_CTRL, memWrite,   1),
+                            `COPYIO2(EX_MEM_CTRL, taken,      1),
+                            `COPYIO2(EX_MEM_CTRL, maskmode,   2),
+                            `COPYIO2(EX_MEM_CTRL, sext,       1),
+                            `COPYIO2(EX_MEM_CTRL, regWrite,   1),
+                            `COPYIO2(EX_MEM_CTRL, toReg,      1) );
+  MEM_WB_CTRL U_MEM_WB_CTRL(clk, reset, MEM_WB_CTRL_flush, MEM_WB_CTRL_valid,
+                            `COPYIO2(MEM_WB_CTRL, regWrite,   1),
+                            `COPYIO2(MEM_WB_CTRL, toReg,      1) );
+
+  wire [31:0] nextPC;
+  wire [31:0] writeData;
+
+  // `REG_UPDATE(pc, U_HazardUnit)
+
+endmodule
