@@ -36,19 +36,20 @@ assign                   {branch, jump, memRead, memWrite, regWrite, toReg, resu
 reg [20:0] signals;
 
 always @(*) begin
-  case(instr)
-    `OPCODE_LUI    :  signals <= DEC_LUI;
-    `OPCODE_AUIPC  :  signals <= DEC_AUIPC;
-    `OPCODE_JAL    :  signals <= DEC_JAL;
-    `OPCODE_JALR   :  signals <= DEC_JALR;
-    `OPCODE_BRANCH :  signals <= DEC_BRANCH;
-    `OPCODE_LOAD   :  signals <= DEC_LOAD;
-    `OPCODE_STORE  :  signals <= DEC_STORE;
-    `OPCODE_ALUI   :  signals <= DEC_ALUI;
-    `OPCODE_ALUR   :  signals <= DEC_ALUR;
+  $write("%x", instr);
+  case(instr[6:0])
+    `OPCODE_LUI    :  begin signals <= DEC_LUI;    $display("~~~decode LUI");  end
+    `OPCODE_AUIPC  :  begin signals <= DEC_AUIPC;  $display("~~~decode AUIPC");  end
+    `OPCODE_JAL    :  begin signals <= DEC_JAL;    $display("~~~decode JAL");  end
+    `OPCODE_JALR   :  begin signals <= DEC_JALR;   $display("~~~decode JALR");  end
+    `OPCODE_BRANCH :  begin signals <= DEC_BRANCH; $display("~~~decode BRANCH");  end
+    `OPCODE_LOAD   :  begin signals <= DEC_LOAD;   $display("~~~decode LOAD");  end
+    `OPCODE_STORE  :  begin signals <= DEC_STORE;  $display("~~~decode STORE");  end
+    `OPCODE_ALUI   :  begin signals <= DEC_ALUI;   $display("~~~decode ALUI");  end
+    `OPCODE_ALUR   :  begin signals <= DEC_ALUR;   $display("~~~decode ALUR");  end
     // `OPCODE_FENCE  :  signals <= DEC_FENCE;
     // `OPCODE_SYSTEM :  signals <= DEC_SYSTEM;
-    default        :  signals <= DEC_INVALID;
+    default        :  begin signals <= DEC_INVALID; $display("~~~decode error~~~"); end
   endcase
 end
 
@@ -58,11 +59,14 @@ wire [31:0] Bimm = {{20{instr[31]}}, instr[7], instr[30:25], instr[11:8], 1'b0};
 wire [31:0] Uimm = {instr[31], instr[30:12], {12{1'b0}}};
 wire [31:0] Jimm = {{12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0};   
 
-assign imm = {32{types[6]}} & 32'b0
-           | {32{types[5]}} & Iimm
+assign imm = {32{types[5]}} & Iimm
            | {32{types[4]}} & Simm
            | {32{types[3]}} & Bimm
            | {32{types[2]}} & Uimm
            | {32{types[1]}} & Jimm;
+// always @(*) begin
+// $display("\t%x\tdecode-imm:%x", instr, imm);
+// $display("\t%x,%x,%x,%x,%b", Iimm, Simm, Bimm, Uimm, types);
+// end
 
 endmodule

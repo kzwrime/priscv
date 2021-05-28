@@ -1,0 +1,38 @@
+
+riscv32_sim1.out：     文件格式 elf32-littleriscv
+
+
+Disassembly of section .text:
+
+00000000 <main>:
+   0:	f1f2f2b7          	lui	t0,0xf1f2f
+   4:	00006317          	auipc	t1,0x6
+   8:	00000013          	nop
+   c:	00000013          	nop
+  10:	00000013          	nop
+  14:	3f428293          	addi	t0,t0,1012 # f1f2f3f4 <main+0xf1f2f3f4>
+  18:	00000013          	nop
+  1c:	00000013          	nop
+  20:	00000013          	nop
+  24:	00000013          	nop
+  28:	00500023          	sb	t0,0(zero) # 0 <main>
+  2c:	005000a3          	sb	t0,1(zero) # 1 <main+0x1>
+  30:	00501123          	sh	t0,2(zero) # 2 <main+0x2>
+  34:	00502223          	sw	t0,4(zero) # 4 <main+0x4>
+  38:	00000013          	nop
+  3c:	00000013          	nop
+  40:	00000013          	nop
+  44:	00000013          	nop
+  48:	00400383          	lb	t2,4(zero) # 4 <main+0x4>
+  4c:	00500403          	lb	s0,5(zero) # 5 <main+0x5>
+  50:	00600483          	lb	s1,6(zero) # 6 <main+0x6>
+  54:	00700503          	lb	a0,7(zero) # 7 <main+0x7>
+  58:	00001583          	lh	a1,0(zero) # 0 <main>
+  5c:	00201603          	lh	a2,2(zero) # 2 <main+0x2>
+  60:	00402683          	lw	a3,4(zero) # 4 <main+0x4>
+  64:	00004703          	lbu	a4,0(zero) # 0 <main>
+  68:	00104783          	lbu	a5,1(zero) # 1 <main+0x1>
+  6c:	00204803          	lbu	a6,2(zero) # 2 <main+0x2>
+  70:	00304883          	lbu	a7,3(zero) # 3 <main+0x3>
+  74:	00405903          	lhu	s2,4(zero) # 4 <main+0x4>
+  78:	00605983          	lhu	s3,6(zero) # 6 <main+0x6>

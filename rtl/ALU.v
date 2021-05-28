@@ -44,7 +44,10 @@ module ALU (
       `ALU_OP_NEQ:    out <= {31'b0, neq};
       `ALU_OP_GE:     out <= {31'b0, ~cmp};
       `ALU_OP_GEU:    out <= {31'b0, ~cmp};
-      default:        begin out <= 32'b0; $display("~~~alu error~~~"); end
+      default:        begin 
+          out <= 32'b0; 
+          $display("~~~alu error~~~%x", aluOp); 
+        end
     endcase
   end
 

@@ -4,8 +4,8 @@ module IMem (
   `MemPortIO
   output [31:0] instr
 );
-  reg[31:0] I_MEM[0:255]; // 2^8
-  assign instr = I_MEM[addr[7:2]];
+  reg[31:0] IMEM[0:255]; // 2^8
+  assign instr = IMEM[addr[7:2]];
   assign good  = 1;
 endmodule
 

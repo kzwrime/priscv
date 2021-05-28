@@ -11,11 +11,12 @@ module RegFile (
     integer ii;
     reg [31:0] regs[31:0];
     always @(posedge clk) begin
-        if(wen & (|regWAddr)) regs[regWAddr] <= regWData;
         if(reset) begin
+            $display("~~~regs reset~~~");
             for(ii=0; ii<32; ii=ii+1)
                 regs[ii] <= 0;
         end
+        else if(wen & (|regWAddr)) regs[regWAddr] <= regWData;
     end
 
     // for pipeline
