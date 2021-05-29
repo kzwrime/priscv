@@ -53,6 +53,7 @@ module DMem (
   end
   always @(posedge clk) begin
     if(valid & memWrite) begin
+      $display("~~~DMEM write~~~mask:%b addr:%x wData:%x", maskMode, addr, writeData);
       if(maskMode === 2'b00) begin
         case(addr[1:0])
         2'b00:  DMEM[addr[7:2]][ 7: 0] <= writeData[7:0];
@@ -61,7 +62,8 @@ module DMem (
         2'b11:  DMEM[addr[7:2]][31:24] <= writeData[7:0];
         endcase
       end
-    end else if(maskMode === 2'b01) begin
+      else if(maskMode === 2'b01) begin
+      // $display("sh");
         case(addr[1])
         1'b0: DMEM[addr[7:2]][15: 0] <= writeData[15:0];
         1'b1: DMEM[addr[7:2]][31:16] <= writeData[15:0];
@@ -69,5 +71,6 @@ module DMem (
     end else if(maskMode === 2'b10) begin
         DMEM[addr[7:2]] <= writeData;
     end
+  end
   end
 endmodule

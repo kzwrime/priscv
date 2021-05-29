@@ -19,7 +19,7 @@ module tb_top3 ();
     always @(*) begin
         #`CLOCK_TIME_HALF clk <= ~clk;
         counter <= counter + 1;
-        if(counter >= 30) $finish;
+        if(counter >= 50) $finish;
     end
 
     initial begin
@@ -154,6 +154,7 @@ module tb_top3 ();
         $fwrite(FILE, "instr: %b\n",SV_CPU_TOP.io_imem_instr);
 
         $fwrite(FILE, "### Fetch PC = %x\n", SV_CPU_TOP.U_CPU.if_id_io_in_pc);
+        $write("### Fetch PC = %x   ", SV_CPU_TOP.U_CPU.if_id_io_in_pc);
             $fwrite(FILE, "|if_id_io_in_instr|if_id_io_in_pcPlus4|if_id_io_flush|if_id_io_valid|\n");
             $fwrite(FILE, "|-|-|-|-|\n");
             $fwrite(FILE, "|%x|%x|%x|%x|\n",
@@ -163,6 +164,7 @@ module tb_top3 ();
                         SV_CPU_TOP.U_CPU.if_id_io_valid
                     );
         $fwrite(FILE, "### Decode PC = %x\n", SV_CPU_TOP.U_CPU.if_id_io_data_pc);
+        $write("### Decode PC = %x   ", SV_CPU_TOP.U_CPU.if_id_io_data_pc);
             $fwrite(FILE, "|if_id_io_data_instr|if_id_io_data_pc|if_id_io_data_pcPlus4|id_ex_io_in_regWAdd|\n");
             $fwrite(FILE, "|-|-|-|-|\n");
             $fwrite(FILE, "|%x|%x|%x|%x|\n",
@@ -210,6 +212,7 @@ module tb_top3 ();
                         SV_CPU_TOP.U_CPU.id_ex_ctrl_io_flush,
                         SV_CPU_TOP.U_CPU.id_ex_ctrl_io_valid, 0);
         $fwrite(FILE, "### Execute PC = %x\n", SV_CPU_TOP.U_CPU.id_ex_io_data_pc);
+        $write("### Execute PC = %x   ", SV_CPU_TOP.U_CPU.id_ex_io_data_pc);
             $fwrite(FILE, "|id_ex_io_data_funct7|id_ex_io_data_funct3|id_ex_io_data_imm|id_ex_io_data_regRData2|\n");
             $fwrite(FILE, "|-|-|-|-|\n");
             $fwrite(FILE, "|%x|%x|%x|%x|\n",
@@ -250,25 +253,26 @@ module tb_top3 ();
                         SV_CPU_TOP.U_CPU.id_ex_ctrl_io_data_wb_ctrl_regWrite,
                         SV_CPU_TOP.U_CPU.id_ex_ctrl_io_flush,
                         SV_CPU_TOP.U_CPU.id_ex_ctrl_io_valid, 0);
-            $fwrite(FILE, "|ex_mem_io_in_regWAddr|ex_mem_io_in_regRData2|ex_mem_io_in_result|ex_mem_io_in_nextpc|\n");
+            $fwrite(FILE, "|ex_mem_io_in_regWAddr|ex_mem_io_in_regRData2|ex_mem_io_in_result|ex_mem_io_in_nextpc(X)|\n");
             $fwrite(FILE, "|%x|%x|%x|%x|\n",
                         SV_CPU_TOP.U_CPU.ex_mem_io_in_regWAddr,
                         SV_CPU_TOP.U_CPU.ex_mem_io_in_regRData2,
-                        SV_CPU_TOP.U_CPU.ex_mem_io_in_result,
-                        SV_CPU_TOP.U_CPU.ex_mem_io_in_nextpc);
+                        SV_CPU_TOP.U_CPU.ex_mem_io_in_result, 32'bx);
+                        // SV_CPU_TOP.U_CPU.ex_mem_io_in_nextpc);
             $fwrite(FILE, "|ex_mem_io_in_pc|ex_mem_io_flush|ex_mem_io_valid|\n");
             $fwrite(FILE, "|%x|%x|%x|%x|\n",
                         SV_CPU_TOP.U_CPU.ex_mem_io_in_pc,
                         SV_CPU_TOP.U_CPU.ex_mem_io_flush,
                         SV_CPU_TOP.U_CPU.ex_mem_io_valid, 0);
         $fwrite(FILE, "### Memory PC = %x\n", SV_CPU_TOP.U_CPU.ex_mem_io_data_pc);
-            $fwrite(FILE, "|ex_mem_io_data_regWAddr|ex_mem_io_data_regRData2|ex_mem_io_data_result|ex_mem_io_data_nextpc|\n");
+        $write("### Memory PC = %x   ", SV_CPU_TOP.U_CPU.ex_mem_io_data_pc);
+            $fwrite(FILE, "|ex_mem_io_data_regWAddr|ex_mem_io_data_regRData2|ex_mem_io_data_result|ex_mem_io_data_nextpc(X)|\n");
             $fwrite(FILE, "|-|-|-|-|\n");
             $fwrite(FILE, "|%x|%x|%x|%x|\n",
                         SV_CPU_TOP.U_CPU.ex_mem_io_data_regWAddr,
                         SV_CPU_TOP.U_CPU.ex_mem_io_data_regRData2,
-                        SV_CPU_TOP.U_CPU.ex_mem_io_data_result,
-                        SV_CPU_TOP.U_CPU.ex_mem_io_data_nextpc);
+                        SV_CPU_TOP.U_CPU.ex_mem_io_data_result, 32'bx);
+                        // SV_CPU_TOP.U_CPU.ex_mem_io_data_nextpc);
             $fwrite(FILE, "|ex_mem_io_data_pc|ex_mem_io_flush|ex_mem_io_valid|\n");
             $fwrite(FILE, "|%x|%x|%x|%x|\n",
                         SV_CPU_TOP.U_CPU.ex_mem_io_data_pc,
@@ -298,6 +302,7 @@ module tb_top3 ();
                         SV_CPU_TOP.U_CPU.mem_wb_io_flush,
                         SV_CPU_TOP.U_CPU.mem_wb_io_valid,0);
         $fwrite(FILE, "### Writeback PC = %x\n", SV_CPU_TOP.U_CPU.mem_wb_io_data_pc);
+        $write("### Writeback PC = %x\n", SV_CPU_TOP.U_CPU.mem_wb_io_data_pc);
             $fwrite(FILE, "|mem_wb_io_flush|mem_wb_io_valid|mem_wb_io_data_regWAddr|mem_wb_io_data_result|\n");
             $fwrite(FILE, "|-|-|-|-|\n");
             $fwrite(FILE, "|%x|%x|%x|%x|\n",

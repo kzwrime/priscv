@@ -13,7 +13,7 @@ module ForwardingUnit (
   assign forwardA = (exMemRw & (rs1 === exMemRd) & (exMemRd !== 5'b0)) ? 2'b01
                   : (memWBRw & (rs1 === memWBRd) & (memWBRd !== 5'b0)) ? 2'b10
                   : 2'b00;
-  assign forwardA = (exMemRw & (rs2 === exMemRd) & (exMemRd !== 5'b0)) ? 2'b01
+  assign forwardB = (exMemRw & (rs2 === exMemRd) & (exMemRd !== 5'b0)) ? 2'b01
                   : (memWBRw & (rs2 === memWBRd) & (memWBRd !== 5'b0)) ? 2'b10
                   : 2'b00;
 endmodule

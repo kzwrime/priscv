@@ -36,7 +36,10 @@ module HazardUnit (
       pcStall     <= 0; // PC from MEM stage\
       IF_ID_flush  <= 1;
       ID_EX_flush  <= 1;
-      EX_MEM_flush <= 1;
+      // EX_MEM_flush <= 1;
+      EX_MEM_flush <= 0; // CHANGE : match TODO 01 Execute 的分支跳转流水线冲刷提前，
+      // 曾经为从 EX_MEM 的流水线寄存器中读出 ex_mem_taken 来给 Hazard 判断冲刷，
+      // 改为在写入 EX_MEM 之前直接给 hazard 且不冲刷 EX_MEM
     end
   end
 

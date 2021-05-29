@@ -14,7 +14,7 @@ module ALU (
     end
   endfunction  
   
-  wire [31:0] sum    = aluIn1 + ((aluOp[3] | aluOp[1]) ? -aluIn2 : aluIn1);
+  wire [31:0] sum    = aluIn1 + ((aluOp[3] | aluOp[1]) ? -aluIn2 : aluIn2);
   wire        neq    = |sum;
   wire        cmp    = (aluIn1[31] === aluIn2[31]) ? sum[31]
                      : aluOp[0] ? aluIn2[31] : aluIn1[31];
