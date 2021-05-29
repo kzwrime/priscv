@@ -24,7 +24,7 @@ localparam DEC_INVALID = 21'b0;
 //                        branch jump   memRead  memWrite  regWrite  toReg  resultSel  aluSrc  pcAdd     RISBUJZ  aluCtrlOp  validInst
 localparam DEC_LUI     = {1'b0,  2'b00, 1'b0,    1'b0,     1'b1,     1'b0,  2'b01,     1'b0,   1'b0,  7'b0000100, 2'b00,     1'b1};
 localparam DEC_AUIPC   = {1'b0,  2'b00, 1'b0,    1'b0,     1'b1,     1'b0,  2'b00,     1'b1,   1'b1,  7'b0000100, 2'b00,     1'b1};
-localparam DEC_JAL     = {1'b0,  2'b01, 1'b0,    1'b0,     1'b1,     1'b0,  2'b10,     1'b0,   1'b0,  7'b0000010, 2'b00,     1'b1};
+localparam DEC_JAL     = {1'b0,  2'b00, 1'b0,    1'b0,     1'b1,     1'b0,  2'b10,     1'b0,   1'b0,  7'b0000010, 2'b00,     1'b1};
 localparam DEC_JALR    = {1'b0,  2'b11, 1'b0,    1'b0,     1'b1,     1'b0,  2'b10,     1'b1,   1'b0,  7'b0100000, 2'b00,     1'b1};
 localparam DEC_BRANCH  = {1'b1,  2'b00, 1'b0,    1'b0,     1'b0,     1'b0,  2'b00,     1'b0,   1'b0,  7'b0001000, 2'b01,     1'b1};
 localparam DEC_LOAD    = {1'b0,  2'b00, 1'b1,    1'b0,     1'b1,     1'b1,  2'b00,     1'b1,   1'b0,  7'b0100000, 2'b00,     1'b1};
@@ -49,7 +49,7 @@ always @(*) begin
     `OPCODE_ALUR   :  begin signals <= DEC_ALUR;   $display("~~~decode ALUR");  end
     // `OPCODE_FENCE  :  signals <= DEC_FENCE;
     // `OPCODE_SYSTEM :  signals <= DEC_SYSTEM;
-    default        :  begin signals <= DEC_INVALID; $display("~~~decode error~~~"); end
+    default        :  begin signals <= DEC_INVALID; $display("~~~decode error~~~%x", instr); end
   endcase
 end
 

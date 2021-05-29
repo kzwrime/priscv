@@ -22,9 +22,9 @@ module HazardUnit (
     ID_EX_flush    <= 0;
     EX_MEM_flush   <= 0;  
     IF_ID_flush    <= 0;
-    // ID 截断需要读的寄存器和 EX 阶段需要写的寄存器相同，即 1a/1b 类型的冒险
-    // 等一个周期（等前馈电路）
-    if(ID_EX_memRead && (ID_EX_rd === rs1 || ID_EX_rd === rs1)) begin
+    // 前一条指令是 load，后一条的 rs1/rs2 依赖于前一条从 mem 读出来的值，
+    // 没法不停顿前递，需要让 load 之后的指令停顿一个周期，仅即 IF/ID 冲刷
+    if(ID_EX_memRead & (ID_EX_rd === rs1 || ID_EX_rd === rs2)) begin
       pcFromTaken <= 0;
       pcStall     <= 1;
       IF_ID_stall  <= 1;

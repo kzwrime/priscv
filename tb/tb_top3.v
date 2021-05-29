@@ -98,8 +98,8 @@ module tb_top3 ();
         $fwrite(FILE, "# pc %x\n", SV_CPU_TOP.U_CPU.pc);
         if(SV_CPU_TOP.U_CPU.pc == 32'b0) $display();
         $write("\npc %x,\t instr %x\t\t\n", SV_CPU_TOP.U_CPU.pc, SV_CPU_TOP.io_imem_instr);
-        $write("reg(7) = %x %x \t\tmem(0) = %x\t\t", SV_CPU_TOP.U_CPU.regs.regs[7], SV_CPU_TOP.U_CPU.regs.regs[10], SV_CPU_TOP.U_DM.DMEM[0]);
-        $write("reg(27) = %x %x \t\tmem(4) = %x\n", SV_CPU_TOP.U_CPU.regs.regs[27], SV_CPU_TOP.U_CPU.regs.regs[28], SV_CPU_TOP.U_DM.DMEM[1]);
+        $write("reg(5) = %x %x \t\tmem(0) = %x\t\t", SV_CPU_TOP.U_CPU.regs.regs[5], SV_CPU_TOP.U_CPU.regs.regs[6], SV_CPU_TOP.U_DM.DMEM[0]);
+        $write("reg(27) = %x %x \t\tmem(1) = %x\n", SV_CPU_TOP.U_CPU.regs.regs[27], SV_CPU_TOP.U_CPU.regs.regs[28], SV_CPU_TOP.U_DM.DMEM[1]);
         // case({is_ALUR,      is_LOAD, 
         //       is_STORE,    is_BRANCH, 
         //       is_JAL,      is_JALR, 

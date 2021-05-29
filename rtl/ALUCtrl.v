@@ -4,12 +4,18 @@ module ALUCtrl (
     input [2:0]  funct3,
     input [6:0]  funct7,
     input [1:0]  aluCtrlOp,
+    input        itype,
     output reg [3:0] aluOp
 );
     always @(*) begin
       case(aluCtrlOp)
         2'b00:  aluOp <= `ALU_OP_ADD;           // Load/Store
-        2'b10:  aluOp <= {funct7[5], funct3};   // normal ALUI/ALUR
+        2'b10:  begin
+          if(itype & funct3[1:0] !== 2'b01)
+            aluOp <= {1'b0, funct3};
+          else
+            aluOp <= {funct7[5], funct3};   // normal ALUI/ALUR
+        end
         2'b01:  begin
           $display("~~~aluCtrl bxx~~~%d", funct3);
           case(funct3)                    // bxx

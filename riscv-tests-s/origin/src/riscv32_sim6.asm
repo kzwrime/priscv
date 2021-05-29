@@ -4,10 +4,11 @@
 # 本测试只验证单条指令的功能，不考察转发和冒险检测的功能，所以在相关指令之间添加了足够多的nop指令
 
 #		Assembly                Description
-main:   addi    x5, x0, 0               #x5 <== 0x0
-        addi    x6, x0, 0               #x6 <== 0x0
+main:   
         lui     x7, 0xfffff             #x7 <== 0xFFFFF000
-        beq     x6, x0, br1             #beq taken
+        addi    x5, x0, 1               #x5 <== 0x1
+        addi    x6, x0, 1               #x6 <== 0x1
+        beq     x6, x5, br1             #beq taken
 br1ret: beq     x7, x0, br2ret          #beq not taken
         addi    x5, x5, 1               #x5 = 2
 br2ret: bne     x7, x0, br3             #bne taken

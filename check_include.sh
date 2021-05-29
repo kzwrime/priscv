@@ -12,6 +12,7 @@ if [ $? -eq 0 ];then
 	echo "\`include \"rtl/ForwardingUnit.v\""   >> rtl/CPU.v			
 	echo "\`include \"rtl/Hazard.v\""           >> rtl/CPU.v	
 	echo "\`include \"rtl/RegFile.v\""          >> rtl/CPU.v
+	echo "\`include \"rtl/Predicter.v\""          >> rtl/CPU.v
 fi
 
 grep -q "!@$%" $1
