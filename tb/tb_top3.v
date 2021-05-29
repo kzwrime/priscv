@@ -19,7 +19,7 @@ module tb_top3 ();
     always @(*) begin
         #`CLOCK_TIME_HALF clk <= ~clk;
         counter <= counter + 1;
-        if(counter >= 20) $finish;
+        if(counter >= 30) $finish;
     end
 
     initial begin
@@ -49,6 +49,7 @@ module tb_top3 ();
 
         $display("pc = 0x0 : %x", SV_CPU_TOP.U_IM.IMEM[0]);
         $display("pc = 0x4 : %x", SV_CPU_TOP.U_IM.IMEM[1]);
+        $display("pc = 0x18c : %x", SV_CPU_TOP.U_IM.IMEM[99]);
     end
 
     localparam DEC_INVALID = 21'b0;
