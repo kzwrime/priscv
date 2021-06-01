@@ -1,10 +1,10 @@
-SOURCE_NOEXT := ./tb/tb_top3
+SOURCE_NOEXT := ./tb/tb_top4
 SOURCE := ${SOURCE_NOEXT}.v
 TARGET := ${SOURCE_NOEXT}.o
 
 # 1, 4, 6
-TEST_HEX := ./riscv-tests-s/origin/build/riscv32_sim6.verilog
-# TEST_HEX := ./data/Test_37_Instr2.dat
+# TEST_HEX := ./riscv-tests-s/origin/build/riscv32_sim6.verilog
+TEST_HEX := ./data/Test_37_Instr2.dat
 
 test1:
 	rm -f ${SOURCE_NOEXT}.md ${SOURCE_NOEXT}.vcd ${TARGET}

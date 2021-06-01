@@ -32,8 +32,8 @@ module DMem (
           if(maskMode === 2'b00) begin
             case(addr[1:0])
             2'b00:  readData <= {{24{sext & DMEM[addr[7:2]][7]}},  DMEM[addr[7:2]][7:0]};
-            2'b10:  readData <= {{24{sext & DMEM[addr[7:2]][23]}}, DMEM[addr[7:2]][23:16]};
             2'b01:  readData <= {{24{sext & DMEM[addr[7:2]][15]}}, DMEM[addr[7:2]][15:8]};
+            2'b10:  readData <= {{24{sext & DMEM[addr[7:2]][23]}}, DMEM[addr[7:2]][23:16]};
             2'b11:  readData <= {{24{sext & DMEM[addr[7:2]][31]}}, DMEM[addr[7:2]][31:24]};
             endcase
           end

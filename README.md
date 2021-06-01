@@ -42,9 +42,13 @@ riscv-random-asm 10
 
 
 
+### 全自动对比验错
 
+![image-20210601212356684](../../.config/Typora/typora-user-images/image-20210601212356684.png)
 
+### 模拟
 
+![image-20210601214108175](../../.config/Typora/typora-user-images/image-20210601214108175.png)
 
 
 

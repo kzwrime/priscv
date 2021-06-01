@@ -37,15 +37,15 @@ module tb_top3 ();
         #100
         $write("HEXFILE = ");
         $display(`HEXFILE);
-        $readmemh(`HEXFILE, IM_TMP);
-        for(ii = 0; ii <= 1023; ii = ii + 4) begin
-            SV_CPU_TOP.U_IM.IMEM[ii>>2][7:0] = IM_TMP[ii];
-            SV_CPU_TOP.U_IM.IMEM[ii>>2][15:8] = IM_TMP[ii+1];
-            SV_CPU_TOP.U_IM.IMEM[ii>>2][23:16] = IM_TMP[ii+2];
-            SV_CPU_TOP.U_IM.IMEM[ii>>2][31:24] = IM_TMP[ii+3];
-        end
+        // $readmemh(`HEXFILE, IM_TMP);
+        // for(ii = 0; ii <= 1023; ii = ii + 4) begin
+        //     SV_CPU_TOP.U_IM.IMEM[ii>>2][7:0] = IM_TMP[ii];
+        //     SV_CPU_TOP.U_IM.IMEM[ii>>2][15:8] = IM_TMP[ii+1];
+        //     SV_CPU_TOP.U_IM.IMEM[ii>>2][23:16] = IM_TMP[ii+2];
+        //     SV_CPU_TOP.U_IM.IMEM[ii>>2][31:24] = IM_TMP[ii+3];
+        // end
         
-        // $readmemh(`HEXFILE, SV_CPU_TOP.U_IM.IMEM);
+        $readmemh(`HEXFILE, SV_CPU_TOP.U_IM.IMEM);
 
         $display("pc = 0x0 : %x", SV_CPU_TOP.U_IM.IMEM[0]);
         $display("pc = 0x4 : %x", SV_CPU_TOP.U_IM.IMEM[1]);

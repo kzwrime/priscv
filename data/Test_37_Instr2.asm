@@ -48,24 +48,31 @@ lbu x23, 24(x3)
 sw x23, 32(x3)
 sw x0, 4(x3)
 and x9, x0, x9
-bne x20, x21, .+8
+bne x20, x21, xx
 addi x9, x9, 1
-bge x20, x21, .+8
+xx:
+bge x20, x21, yy
 addi x9, x9, 1
-bgeu x20, x21, .+8
+yy:
+bgeu x20, x21, zz
 addi x9, x9, 2
-blt x20, x21, .+8
+zz:
+blt x20, x21, a1
 addi x9, x9, 3
-bltu x20, x21, .+8
+a1:
+bltu x20, x21, a2
 addi x9, x9, 4
+a2:
 lw x25, 24(x3)
-beq x21, x25, .+8
+beq x21, x25, a3
 addi x9, x9, 5
+a3:
 sw x9, 4(x3)
 lw x10, 4(x3)
-jal x1, .+12
+jal x1, a4
 addi x10, x10, 8
 sw x10, 4(x3)
+a4:
 ori x10, x10, 1116
 sw x10, 4(x3)
 jalr x0, x1, 0
