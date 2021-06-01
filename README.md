@@ -15,6 +15,30 @@
     <!-- - Decode 做 branch (1100011) 的比较 [rs1] <=> [rs2]，把目前 Execute 阶段的 branchAdd 和 ALU 中的判断逻辑放到 Decode 阶段，如果跳转，交由 hazard 立即冲刷 IF_ID，且用 pcFromTaken 更新 PC
     - Decode 做 jalr (1100111) 的 imm + [rs1], 交由 hazard 立即冲刷 IF_ID，且用 pcFromTaken 更新 PC -->
 
+## Test
+
+暂时还上不了 [riscv-tools](https://github.com/riscv/riscv-tools) 或 [riscv-tests](https://github.com/riscv/riscv-tests)，反正就 RISC-V ISA 先用点简单的
+
+### riscv-model 随机生成汇编码或反汇编
+
+简单地借助 [riscv-model](https://pypi.org/project/riscv-model/),用法直接参考此链接即可
+
+
+十六进制文件反汇编
+
+```bash
+cd data
+riscv-machinsn-decode hexstring $(cat Test_37_Instr.dat) > Test_37_Instr.asm
+```
+
+随机生成汇编码
+```bash
+riscv-random-asm 10
+```
+
+### pyriscv 模拟
+
+
 
 
 
