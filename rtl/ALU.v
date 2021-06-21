@@ -1,3 +1,4 @@
+`timescale 1ps/1ps
 `include "rtl/Defines.v"
 module ALU (
   input  [31:0] aluIn1,
@@ -16,7 +17,7 @@ module ALU (
   
   wire [31:0] sum    = aluIn1 + ((aluOp[3] | aluOp[1]) ? -aluIn2 : aluIn2);
   wire        neq    = |sum;
-  wire        cmp    = (aluIn1[31] === aluIn2[31]) ? sum[31]
+  wire        cmp    = (aluIn1[31] == aluIn2[31]) ? sum[31]
                      : aluOp[0] ? aluIn2[31] : aluIn1[31];
   wire [ 4:0] shamt  = aluIn2[4:0];
   wire [31:0] shin   = aluOp[2] ? aluIn1 : reverse(aluIn1);

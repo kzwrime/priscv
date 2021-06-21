@@ -1,3 +1,4 @@
+`timescale 1ps/1ps
 module ForwardingUnit (
   input [4:0] rs1,
   input [4:0] rs2,
@@ -10,10 +11,10 @@ module ForwardingUnit (
   output [1:0] forwardB
 );
 
-  assign forwardA = (exMemRw & (rs1 === exMemRd) & (exMemRd !== 5'b0)) ? 2'b01
-                  : (memWBRw & (rs1 === memWBRd) & (memWBRd !== 5'b0)) ? 2'b10
+  assign forwardA = (exMemRw & (rs1 == exMemRd) & (exMemRd != 5'b0)) ? 2'b01
+                  : (memWBRw & (rs1 == memWBRd) & (memWBRd != 5'b0)) ? 2'b10
                   : 2'b00;
-  assign forwardB = (exMemRw & (rs2 === exMemRd) & (exMemRd !== 5'b0)) ? 2'b01
-                  : (memWBRw & (rs2 === memWBRd) & (memWBRd !== 5'b0)) ? 2'b10
+  assign forwardB = (exMemRw & (rs2 == exMemRd) & (exMemRd != 5'b0)) ? 2'b01
+                  : (memWBRw & (rs2 == memWBRd) & (memWBRd != 5'b0)) ? 2'b10
                   : 2'b00;
 endmodule

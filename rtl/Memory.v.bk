@@ -72,7 +72,7 @@ module DualPortedCombinMemory(
   // only read or read-write is valid
   always @(*) begin
     if(requestValid) begin
-      if(requestOperation === 2'b01) begin
+      if(requestOperation == 2'b01) begin
         responseValid <= 0;
         $display("~~~Mem backend error~~~");
       end
@@ -85,7 +85,7 @@ module DualPortedCombinMemory(
     else responseValid <= 0;
   end
   always @(posedge clk) begin
-    if(requestValid && requestOperation === "10") begin
+    if(requestValid && requestOperation == "10") begin
       MEM[requestAddr[9:2]] <= requestWriteData;
     end
   end

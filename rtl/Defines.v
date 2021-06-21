@@ -1,55 +1,55 @@
 // function
-`define FUNC_FUNC(allname, func)\
-        ```func````allname``
+// `define FUNC_FUNC(allname, func)\
+//         ```func````allname``
 
-`define PRINTLN(name)\
-        $display(``name``);
+// `define PRINTLN(name)\
+//         $display(``name``);
 
-`define REG_INIT(name, width, init)             \
-        reg [``width``-1:0] ``name``;           \
-        localparam __``name``__init = ``init``; \
-        initial begin                           \
-          ``name`` <= (``init``);               \
-        end
+// `define REG_INIT(name, width, init)             \
+//         reg [``width``-1:0] ``name``;           \
+//         localparam __``name``__init = ``init``; \
+//         initial begin                           \
+//           ``name`` <= (``init``);               \
+//         end
 
-`define REG_UPDATE(name, newVal)                \
-        always @(posedge clk) begin             \
-            ``name`` <= (``newVal``);           \
-            if(reset) begin                     \
-                ``name`` <= __``name``__init;   \
-            end                                 \
-        end
+// `define REG_UPDATE(name, newVal)                \
+//         always @(posedge clk) begin             \
+//             ``name`` <= (``newVal``);           \
+//             if(reset) begin                     \
+//                 ``name`` <= __``name``__init;   \
+//             end                                 \
+//         end
 
-`define COPYIO(name, width)                     \
-        input  [``width``-1:0]  in_``name``,      \
-        output [``width``-1:0]  out_``name``
+// `define COPYIO(name, width)                     \
+//         input  [``width``-1:0]  in_``name``,      \
+//         output [``width``-1:0]  out_``name``
 
-`define COPYIO2(prename, name, width)           \
-        ``prename``_in_``name``,                \
-        ``prename``_out_``name``
+// `define COPYIO2(prename, name, width)           \
+//         ``prename``_in_``name``,                \
+//         ``prename``_out_``name``
 
-`define WIRE(name, width)\
-        wire [``width``-1:0] ``name``;
+// `define WIRE(name, width)\
+//         wire [``width``-1:0] ``name``;
 
-`define CREATE_S_STAGEREG(name, _width)         \
-        StageReg #(.width(``_width``))          \
-        U_``name`` (clk,   reset, in_``name``,  \
-                   flush, valid, out_``name``); 
+// `define CREATE_S_STAGEREG(name, _width)         \
+//         StageReg #(.width(``_width``))          \
+//         U_``name`` (clk,   reset, in_``name``,  \
+//                    flush, valid, out_``name``); 
 
-`define PRE_CREATE_STAGEREG(prename)            \
-        wire    ``prename``_in;                 \
-        wire    ``prename``_flush;              \
-        wire    ``prename``_valid;              \
+// `define PRE_CREATE_STAGEREG(prename)            \
+//         wire    ``prename``_in;                 \
+//         wire    ``prename``_flush;              \
+//         wire    ``prename``_valid;              \
 
-`define CREATE_STAGEREG(prename, name, _width)              \
-        wire [``_width``-1:0]   ``prename``_``name``_data;  \
-        StageReg #(.width(``_width``))              \
-          ``prename``_``name``(         clk,        \    
-                                         reset,     \
-                                ``prename``_in,     \
-                                ``prename``_flush,  \
-                                ``prename``_valid,  \
-                                ``prename``_``name``_data);
+// `define CREATE_STAGEREG(prename, name, _width)              \
+//         wire [``_width``-1:0]   ``prename``_``name``_data;  \
+//         StageReg #(.width(``_width``))              \
+//           ``prename``_``name``(         clk,        \    
+//                                          reset,     \
+//                                 ``prename``_in,     \
+//                                 ``prename``_flush,  \
+//                                 ``prename``_valid,  \
+//                                 ``prename``_``name``_data);
 
 // ALU_OP {instr[30], func3}
 `define ALU_OP_ADD      4'b0000

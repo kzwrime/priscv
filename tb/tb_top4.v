@@ -3,7 +3,7 @@
 `include "rtl/Top.v"
 `define HEXFILE ".verilog"
 
-module tb_top3 ();
+module tb_top4 ();
     
     reg clk = 0;
     reg reset = 0;
@@ -53,10 +53,10 @@ module tb_top3 ();
     integer cycle = 0;
     always @(negedge clk) begin
         #1
-        FILE = $fopen("./tb/tb_top4.md", "a");
+        FILE = $fopen("./tmp/tb_top4.md", "a");
         if(SV_CPU_TOP.U_CPU.pc == 32'b0) $display();
         $write("\npc %x,\t instr %x\t\t\n", SV_CPU_TOP.U_CPU.pc, SV_CPU_TOP.io_imem_instr);
-        if(SV_CPU_TOP.U_CPU.mem_wb_io_data_pc !== 32'b0 && SV_CPU_TOP.U_CPU.mem_wb_io_data_pc >= 32'b0) begin
+        if(SV_CPU_TOP.U_CPU.mem_wb_io_data_pc != 32'b0 && SV_CPU_TOP.U_CPU.mem_wb_io_data_pc >= 32'b0) begin
             // $fwrite(FILE, "%x\n", SV_CPU_TOP.U_CPU.pc);
             $fwrite(FILE, "%x\n", SV_CPU_TOP.U_CPU.mem_wb_io_data_pc);
             // $fwrite(FILE, "%x\n",SV_CPU_TOP.io_imem_instr);
@@ -73,11 +73,11 @@ module tb_top3 ();
 
     initial
     begin
-        FILE = $fopen("./tb/tb_top3.md", "a");
+        FILE = $fopen("./tmp/tb_top4.md", "a");
         $fwrite(FILE, "\n");
         $fclose(FILE);
-        $dumpfile("./tb/tb_top3.vcd");  //生成的vcd文件名称
-        $dumpvars(0, tb_top3);       //tb模块名称
+        $dumpfile("./tmp/tb_top4.vcd");  //生成的vcd文件名称
+        $dumpvars(0, tb_top4);       //tb模块名称
     end
 
     integer ii;

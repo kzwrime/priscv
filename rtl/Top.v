@@ -1,9 +1,11 @@
+`timescale 1ps/1ps
 `include "rtl/CPU.v"
 `include "rtl/Memory.v"
 
 module Top (
   input clk,
-  input reset
+  input reset,
+  output test
 );
   wire [31:0] io_imem_addr;
   wire        io_imem_valid;

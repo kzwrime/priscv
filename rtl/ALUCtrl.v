@@ -1,3 +1,4 @@
+`timescale 1ps/1ps
 `include "rtl/Defines.v"
 
 module ALUCtrl (
@@ -11,7 +12,7 @@ module ALUCtrl (
       case(aluCtrlOp)
         2'b00:  aluOp <= `ALU_OP_ADD;           // Load/Store
         2'b10:  begin
-          if(itype & funct3[1:0] !== 2'b01)
+          if(itype & funct3[1:0] != 2'b01)
             aluOp <= {1'b0, funct3};
           else
             aluOp <= {funct7[5], funct3};   // normal ALUI/ALUR

@@ -81,15 +81,15 @@ module tb_top3 ();
          SV_CPU_TOP.U_CPU.decode_imm
     };
 
-    wire is_LUI     = decode_all === DEC_LUI    ;
-    wire is_AUIPC   = decode_all === DEC_AUIPC  ;
-    wire is_JAL     = decode_all === DEC_JAL    ;
-    wire is_JALR    = decode_all === DEC_JALR   ;
-    wire is_BRANCH  = decode_all === DEC_BRANCH ;
-    wire is_LOAD    = decode_all === DEC_LOAD   ;
-    wire is_STORE   = decode_all === DEC_STORE  ;
-    wire is_ALUI    = decode_all === DEC_ALUI   ;
-    wire is_ALUR    = decode_all === DEC_ALUR   ;
+    wire is_LUI     = decode_all == DEC_LUI    ;
+    wire is_AUIPC   = decode_all == DEC_AUIPC  ;
+    wire is_JAL     = decode_all == DEC_JAL    ;
+    wire is_JALR    = decode_all == DEC_JALR   ;
+    wire is_BRANCH  = decode_all == DEC_BRANCH ;
+    wire is_LOAD    = decode_all == DEC_LOAD   ;
+    wire is_STORE   = decode_all == DEC_STORE  ;
+    wire is_ALUI    = decode_all == DEC_ALUI   ;
+    wire is_ALUR    = decode_all == DEC_ALUR   ;
 
     integer i;
     always @(negedge clk) begin

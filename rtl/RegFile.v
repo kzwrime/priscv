@@ -1,3 +1,4 @@
+`timescale 1ps/1ps
 module RegFile (
     input  clk,
     input  reset,
@@ -20,9 +21,9 @@ module RegFile (
     end
 
     // for pipeline
-    assign regRData1 = wen & (regWAddr === regRAddr1) ? regWData
+    assign regRData1 = wen & (regWAddr == regRAddr1) ? regWData
                     : ((regRAddr1 != 5'b0) ? regs[regRAddr1] : 32'b0);
-    assign regRData2 = wen & (regWAddr === regRAddr2) ? regWData
+    assign regRData2 = wen & (regWAddr == regRAddr2) ? regWData
                     : ((regRAddr2 != 5'b0) ? regs[regRAddr2] : 32'b0);
 
 endmodule

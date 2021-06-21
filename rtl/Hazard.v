@@ -1,3 +1,4 @@
+`timescale 1ps/1ps
 module HazardUnit (
   input  [4:0]  rs1,
   input  [4:0]  rs2,
@@ -24,7 +25,7 @@ module HazardUnit (
     IF_ID_flush    <= 0;
     // 前一条指令是 load，后一条的 rs1/rs2 依赖于前一条从 mem 读出来的值，
     // 没法不停顿前递，需要让 load 之后的指令停顿一个周期，仅即 IF/ID 冲刷
-    if(ID_EX_memRead & (ID_EX_rd === rs1 || ID_EX_rd === rs2)) begin
+    if(ID_EX_memRead & (ID_EX_rd == rs1 || ID_EX_rd == rs2)) begin
       pcFromTaken <= 0;
       pcStall     <= 1;
       IF_ID_stall  <= 1;

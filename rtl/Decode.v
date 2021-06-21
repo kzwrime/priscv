@@ -1,3 +1,4 @@
+`timescale 1ps/1ps
 `include "rtl/Defines.v"
 
 module Decode (
@@ -18,6 +19,7 @@ module Decode (
   // output [2:0]  csrCtrl,
   output [31:0] imm
 );
+reg [20:0] signals;
 // jump = {pcFromALU, jump}
 localparam DEC_INVALID = 21'b0;
 //                        20     19-18  17       16        15        14     13-12      11      10     9--------3  2---1      0
@@ -33,7 +35,6 @@ localparam DEC_ALUI    = {1'b0,  2'b00, 1'b0,    1'b0,     1'b1,     1'b0,  2'b0
 localparam DEC_ALUR    = {1'b0,  2'b00, 1'b0,    1'b0,     1'b1,     1'b0,  2'b00,     1'b0,   1'b0,  7'b1000000, 2'b10,     1'b1};
 assign                   {branch, jump, memRead, memWrite, regWrite, toReg, resultSel, aluSrc, pcAdd, types,      aluCtrlOp, validInst} = signals;
 
-reg [20:0] signals;
 
 always @(*) begin
   $write("%x", instr);
