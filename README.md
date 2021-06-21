@@ -25,10 +25,6 @@ RISC-V 五级流水线
   - 修改： 解码器 DEC_JAL 的 jump 改为 2'b00，不再跳转
   
   - 修改： branch 的流水线冲刷操作增加条件：imm[31] === 0
-    
-    <!-- - Decode 做 branch (1100011) 的比较 [rs1] <=> [rs2]，把目前 Execute 阶段的 branchAdd 和 ALU 中的判断逻辑放到 Decode 阶段，如果跳转，交由 hazard 立即冲刷 IF_ID，且用 pcFromTaken 更新 PC
-  
-  - Decode 做 jalr (1100111) 的 imm + [rs1], 交由 hazard 立即冲刷 IF_ID，且用 pcFromTaken 更新 PC -->
 
 ## Test
 
