@@ -80,7 +80,7 @@ module DMem (
           end else if(maskMode == 2'b10) begin
             tmpWriteData <= writeData;
           end
-          dmData_out = tmpWriteData & dmData_out;
+          dmData_out = tmpWriteData & readBack;
         end
     end
     else begin good <= 0; readData <= 0; dmMem_w <= 0; end

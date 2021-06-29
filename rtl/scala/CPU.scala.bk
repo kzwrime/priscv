@@ -7,7 +7,6 @@ class CPU extends Module {
   val io = IO(new Bundle {
     val imem = Flipped(new IMemPortIO)
     val dmem = Flipped(new DMemPortIO)
-    val int  = Input(UInt(8.W)) // 外部中断信号
   })
 
   // Bundles defining the pipeline regs and control structures
@@ -17,7 +16,6 @@ class CPU extends Module {
     val instr    = UInt(32.W)
     val pc       = UInt(32.W)
     val pcPlus4  = UInt(32.W)
-    val noflush = Bool();
   }
 
   // Control signals used in EX stage
@@ -66,7 +64,6 @@ class CPU extends Module {
     val ex_ctrl  = new EXControl
     val mem_ctrl = new MControl
     val wb_ctrl  = new WBControl
-    val noflush = Bool();
   }
 
   // Everything in the register between EX and MEM stages
@@ -82,7 +79,6 @@ class CPU extends Module {
   class EXMEMControl extends Bundle {
     val mem_ctrl  = new MControl
     val wb_ctrl   = new WBControl
-    val noflush = Bool();
   }
 
   // Everything in the register between MEM and WB stages
@@ -96,7 +92,6 @@ class CPU extends Module {
   // Control block of the MEMWB register
   class MEMWBControl extends Bundle {
     val wb_ctrl = new WBControl
-    val noflush = Bool();
   }
 
   // All of the structures required
@@ -138,11 +133,6 @@ class CPU extends Module {
   // For wb back to other stages
   val regWData = Wire(UInt())
 
-  if_id.io.in.noflush := true.B
-  id_ex_ctrl.io.in.noflush := true.B
-  ex_mem_ctrl.io.in.noflush := true.B
-  mem_wb_ctrl.io.in.noflush := true.B
-
   /////////////////////////////////////////////////////////////////////////////
   // FETCH STAGE
   /////////////////////////////////////////////////////////////////////////////
@@ -168,12 +158,12 @@ class CPU extends Module {
   if_id.io.valid := !hazard.io.IF_ID_stall
 
   // Connect outputs of IF stage into the stage register's in port
-  if_id.io.in.instr   := io.imem.instr
-  if_id.io.in.pc      := pc
-  if_id.io.in.pcPlus4 := pcPlus4.io.result
+  if_id.io.in.instr := io.imem.instr
+  if_id.io.in.pc          := pc
+  if_id.io.in.pcPlus4  := pcPlus4.io.result
 
   if_id.io.flush  := hazard.io.IF_ID_flush
-  
+
   predicter.io.instr := io.imem.instr
   predicter.io.pc    := pc
 
@@ -196,7 +186,7 @@ class CPU extends Module {
   regs.io.regRAddr2 := rs2
 
   // Data supplied to id_ex register is always valid every cycle
-  id_ex.io.valid := !hazard.io.ID_EX_stall
+  id_ex.io.valid := true.B
   // Don't need to flush the data in this register
   // id_ex.io.flush := false.B
   id_ex.io.flush := hazard.io.ID_EX_flush;  // CHANGE
@@ -213,7 +203,7 @@ class CPU extends Module {
   id_ex.io.in.pcPlus4   := if_id.io.data.pcPlus4
 
   // Data supplied to id_ex_ctrl register is always valid every cycle
-  id_ex_ctrl.io.valid := !hazard.io.ID_EX_stall
+  id_ex_ctrl.io.valid := true.B
   // Set the execution control signals
   id_ex_ctrl.io.in.ex_ctrl.branch     := decode.io.branch
   id_ex_ctrl.io.in.ex_ctrl.jump       := decode.io.jump
@@ -243,7 +233,6 @@ class CPU extends Module {
   // Set the inputs to the hazard detection unit from this stage
   hazard.io.ID_EX_memRead := id_ex_ctrl.io.data.mem_ctrl.memRead
   hazard.io.ID_EX_rd      := id_ex.io.data.regWAddr
-  hazard.io.ID_EX_memAccess := id_ex_ctrl.io.data.mem_ctrl.memRead || id_ex_ctrl.io.data.mem_ctrl.memWrite
 
   // Set the input to the forwarding unit from this stage
   forwarding.io.rs1 := id_ex.io.data.rs1
@@ -331,30 +320,16 @@ class CPU extends Module {
   // MEM STAGE
   /////////////////////////////////////////////////////////////////////////////
 
-  hazard.io.EX_MEM_maskMode := ex_mem_ctrl.io.data.mem_ctrl.maskMode
-  hazard.io.EX_MEM_wen      := ex_mem_ctrl.io.data.mem_ctrl.memWrite
-
-  val dmem_sb_sh = ex_mem_ctrl.io.data.mem_ctrl.memWrite && (ex_mem_ctrl.io.data.mem_ctrl.maskMode(1))
-  val old_dmem_sb_sh     = RegInit(false.B)
-      old_dmem_sb_sh    := dmem_sb_sh
-  val old_dmem_addr      = RegNext(ex_mem.io.data.result)
-  val old_dmem_writeData = RegNext(ex_mem.io.data.regRData2)
-  val old_dmem_memRead   = RegNext(ex_mem_ctrl.io.data.mem_ctrl.memRead)
-  val old_dmem_memWrite  = RegNext(ex_mem_ctrl.io.data.mem_ctrl.memWrite)
-  val old_dmem_maskMode  = RegNext(ex_mem_ctrl.io.data.mem_ctrl.maskMode)
-  val old_dmem_sext      = RegNext(ex_mem_ctrl.io.data.mem_ctrl.sext)
-  val old_dmem_readData  = RegNext(io.dmem.readData)
-
   // Set data.mem_ctrlemory IO (line 71 of single-cycle/cpu.scala)
-  io.dmem.addr      := Mux(old_dmem_sb_sh, old_dmem_addr,     Mux(dmem_sb_sh, old_dmem_addr     , ex_mem.io.data.result))
-  io.dmem.writeData := Mux(old_dmem_sb_sh, old_dmem_readData, Mux(dmem_sb_sh, old_dmem_writeData, ex_mem.io.data.regRData2))
-  io.dmem.memRead   := Mux(old_dmem_sb_sh, false.B,           Mux(dmem_sb_sh, true.B            , ex_mem_ctrl.io.data.mem_ctrl.memRead))
-  io.dmem.memWrite  := Mux(old_dmem_sb_sh, old_dmem_memWrite, Mux(dmem_sb_sh, false.B           , ex_mem_ctrl.io.data.mem_ctrl.memWrite))
-  io.dmem.maskMode  := Mux(old_dmem_sb_sh, old_dmem_maskMode, Mux(dmem_sb_sh, "b10".U           , ex_mem_ctrl.io.data.mem_ctrl.maskMode))
-  io.dmem.sext      := Mux(old_dmem_sb_sh, old_dmem_sext,     Mux(dmem_sb_sh, 0.U               , ex_mem_ctrl.io.data.mem_ctrl.sext))
-  io.dmem.readBack       := old_dmem_readData
+  io.dmem.addr      := ex_mem.io.data.result
+  io.dmem.writeData := ex_mem.io.data.regRData2
+  io.dmem.memRead   := ex_mem_ctrl.io.data.mem_ctrl.memRead
+  io.dmem.memWrite  := ex_mem_ctrl.io.data.mem_ctrl.memWrite
+  io.dmem.maskMode  := ex_mem_ctrl.io.data.mem_ctrl.maskMode
+  io.dmem.sext      := ex_mem_ctrl.io.data.mem_ctrl.sext
+
   // Set dmem request as valid when a write or read is being requested
-  io.dmem.valid     := io.dmem.memRead | io.dmem.memWrite
+  io.dmem.valid := (io.dmem.memRead | io.dmem.memWrite)
 
   // Send next_pc back to the fetch stage
   // next_pc := ex_mem.io.data.nextpc // CHANGE match TODO 01
@@ -400,7 +375,7 @@ class CPU extends Module {
   forwarding.io.memWBRd := mem_wb.io.data.regWAddr
   forwarding.io.memWBRw := mem_wb_ctrl.io.data.wb_ctrl.regWrite  
   // JUST FOR DEBUG
-  ex_mem.io.in.nextpc := 0.U
+  ex_mem.io.in.nextpc := 0.U;
   // ex_mem.io.data.nextpc := 1.U;
 }
 

@@ -107,7 +107,8 @@ class DMem extends BlackBox {
     val readData  = Output(UInt(32.W))
 
     val readBack = Input(UInt(32.W))
-    val dmData_in = Output(UInt(32.W))
+    val dmData_in = Input(UInt(32.W))
+    val dmData_out = Output(UInt(32.W))
     val dmAddr_out = Output(UInt(32.W))
     val dmMem_w = Output(Bool())
   })
@@ -155,6 +156,7 @@ class DMemPortIO extends MemPortIO {
     val maskMode  = Input(UInt(2.W))
     val sext      = Input(UInt(1.W))
     val readData  = Output(UInt(32.W))
+    val readBack  = Input(UInt(32.W))
 }
 
 class Adder extends Module {
