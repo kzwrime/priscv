@@ -7,9 +7,14 @@ module HazardUnit (
   input  [4:0]  ID_EX_rd,
   input         EX_MEM_taken,
 
+  input         ID_EX_memAccess,
+  input  [1:0]  EX_MEM_maskMode,
+  input         EX_MEM_wen,
+
   output reg    pcFromTaken,
   output reg    pcStall,
   output reg    IF_ID_stall,
+  output reg    ID_EX_stall,
   output reg    ID_EX_flush,
   output reg    EX_MEM_flush,
   output reg    IF_ID_flush
@@ -20,6 +25,7 @@ module HazardUnit (
     pcFromTaken   <= 0;  
     pcStall       <= 0; 
     IF_ID_stall    <= 0;
+    ID_EX_stall    <= 0;
     ID_EX_flush    <= 0;
     EX_MEM_flush   <= 0;  
     IF_ID_flush    <= 0;
@@ -28,10 +34,19 @@ module HazardUnit (
     if(ID_EX_memRead & (ID_EX_rd == rs1 || ID_EX_rd == rs2)) begin
       pcFromTaken <= 0;
       pcStall     <= 1;
-      IF_ID_stall  <= 1;
-      ID_EX_flush  <= 1;
+      IF_ID_stall <= 1;
+      ID_EX_flush <= 1;
     end
-    // alu 预测失败，需要跳转，更新pc，冲刷全部流水线
+    // 同步 RAM，前一条指令是 sb/sh，后一条指令是 load/store，
+    // 由于 sb/sh 需要先读出再写入，占用两个周期，需要把之后的指令停一个周期
+    if(ID_EX_memAccess && EX_MEM_wen && EX_MEM_maskMode != 2'b10) begin
+      pcFromTaken  <= 0;
+      pcStall      <= 1;
+      IF_ID_stall  <= 1;
+      ID_EX_stall  <= 1;
+      EX_MEM_flush <= 1;
+    end
+    // alu 对于 branch 预测失败，需要跳转，更新pc，冲刷全部流水线
     if(EX_MEM_taken) begin 
       pcFromTaken <= 1; // PC from MEM stage
       pcStall     <= 0; // PC from MEM stage\

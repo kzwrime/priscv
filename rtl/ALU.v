@@ -7,7 +7,7 @@ module ALU (
   output [31:0] aluOut
 );
 
-  function [31:0] reverse; 
+  function [31:0] reverse;
     input [31:0] in;
     integer i;
     for(i=0; i<32; i=i+1) begin

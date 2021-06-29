@@ -21,6 +21,9 @@ module Decode (
 );
 reg [20:0] signals;
 // jump = {pcFromALU, jump}
+
+// ----------------------------- decode signals ---------------------------------
+
 localparam DEC_INVALID = 21'b0;
 //                        20     19-18  17       16        15        14     13-12      11      10     9--------3  2---1      0
 //                        branch jump   memRead  memWrite  regWrite  toReg  resultSel  aluSrc  pcAdd     RISBUJZ  aluCtrlOp  validInst
@@ -53,6 +56,39 @@ always @(*) begin
     default        :  begin signals <= DEC_INVALID; $display("~~~decode error~~~%x", instr); end
   endcase
 end
+
+// wire opcode_10_11 =   instr[1]  &   instr[0];
+// wire opcode_65_00 = (~instr[6]) & (~instr[5]);
+// wire opcode_65_01 = (~instr[6]) &   instr[5];
+// wire opcode_65_10 =   instr[6]  & (~instr[5]);
+// wire opcode_65_11 =   instr[1]  &   instr[0];
+// wire is_lui    = opcode_65_01 & ( instr[4]) & (~instr[3]) & ( instr[2]) & opcode_10_11;
+// wire is_auipc  = opcode_65_00 & ( instr[4]) & (~instr[3]) & ( instr[2]) & opcode_10_11;
+// wire is_jal    = opcode_65_11 & (~instr[4]) & ( instr[3]) & ( instr[2]) & opcode_10_11;
+// wire is_jalr   = opcode_65_11 & (~instr[4]) & (~instr[3]) & ( instr[2]) & opcode_10_11;
+// wire is_branch = opcode_65_11 & (~instr[4]) & (~instr[3]) & (~instr[2]) & opcode_10_11;
+// wire is_load   = opcode_65_00 & (~instr[4]) & (~instr[3]) & (~instr[2]) & opcode_10_11;
+// wire is_store  = opcode_65_01 & (~instr[4]) & (~instr[3]) & (~instr[2]) & opcode_10_11;
+// wire is_alui   = opcode_65_00 & ( instr[4]) & (~instr[3]) & (~instr[2]) & opcode_10_11;
+// wire is_alur   = opcode_65_01 & ( instr[4]) & (~instr[3]) & (~instr[2]) & opcode_10_11;
+// wire is_fench  = opcode_65_00 & (~instr[4]) & ( instr[3]) & ( instr[2]) & opcode_10_11;
+// wire is_system = opcode_65_11 & ( instr[4]) & (~instr[3]) & (~instr[2]) & opcode_10_11;
+
+// assign branch = is_branch;
+// assign jump      = {2{is_jalr}};
+// assign memRead   = is_load;
+// assign memWrite  = is_store;
+// assign regWrite  = is_lui | is_auipc | is_jal | is_jalr | is_load | is_alui | is_alur;
+// assign toReg     = is_load;
+// assign resultSel = {is_jal | is_jalr, is_lui};
+// assign aluSrc    = is_auipc | is_jalr | is_load | is_store | is_alui;
+// assign pcAdd     = is_auipc;
+// assign types     = {is_alur,  is_jalr | is_load | is_alui, is_store, is_branch, is_lui | is_auipc, is_jal, 1'b0};
+// assign aluCtrlOp = {is_alui | is_alur, is_branch};
+// assign validInst = is_lui | is_auipc | is_jal | is_jalr | is_branch | is_load | is_store | is_alui | is_alur;
+
+
+// -------------------- IMM -------------------------
 
 wire [31:0] Iimm = {{21{instr[31]}}, instr[30:20]};
 wire [31:0] Simm = {{21{instr[31]}}, instr[30:25], instr[11:7]};

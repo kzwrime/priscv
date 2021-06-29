@@ -7,6 +7,7 @@ TARGET := ${SOURCE_NOEXT}.o
 TEST_HEX := ./data/Test_37_Instr2.dat
 
 test1:
+	mkdir tmp
 	rm -f ${SOURCE_NOEXT}.md ${SOURCE_NOEXT}.vcd ${TARGET}
 	make -C ./riscv-tests-s/origin
 	cp ${SOURCE} ${SOURCE}.bk
@@ -17,6 +18,7 @@ test1:
 	vvp ${TARGET}
 
 test2:
+	mkdir tmp
 	rm -f ${SOURCE_NOEXT}.md ${SOURCE_NOEXT}.vcd ${TARGET}
 	cp ${SOURCE} ${SOURCE}.bk
 	sed -i 's#.verilog#${TEST_HEX}#' ${SOURCE}

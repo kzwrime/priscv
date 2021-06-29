@@ -78,14 +78,14 @@
 `define BLTU_FUNCT3     3'b110
 `define BGEU_FUNCT3     3'b111
 
-`define OPCODE_LUI             7'b0110111
-`define OPCODE_AUIPC           7'b0010111
-`define OPCODE_JAL             7'b1101111
-`define OPCODE_JALR            7'b1100111
-`define OPCODE_BRANCH          7'b1100011
-`define OPCODE_LOAD            7'b0000011
-`define OPCODE_STORE           7'b0100011
-`define OPCODE_ALUI            7'b0010011
-`define OPCODE_ALUR            7'b0110011
-`define OPCODE_FENCE           7'b0001111
-`define OPCODE_SYSTEM          7'b1110011
+`define OPCODE_LUI             7'b01_101_11
+`define OPCODE_AUIPC           7'b00_101_11
+`define OPCODE_JAL             7'b11_011_11
+`define OPCODE_JALR            7'b11_001_11
+`define OPCODE_BRANCH          7'b11_000_11
+`define OPCODE_LOAD            7'b00_000_11
+`define OPCODE_STORE           7'b01_000_11
+`define OPCODE_ALUI            7'b00_100_11
+`define OPCODE_ALUR            7'b01_100_11
+`define OPCODE_FENCE           7'b00_011_11
+`define OPCODE_SYSTEM          7'b11_100_11
