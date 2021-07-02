@@ -43,7 +43,8 @@ module tb_top4 ();
         $display(`HEXFILE);
         
         $readmemh(`HEXFILE, SV_CPU_TOP.U_IM.IMEM);
-
+        $readmemh("./data/second/D_DEMO31.coe", SV_CPU_TOP.U_DM.DMEM);
+        
         $display("pc = 0x0 : %x", SV_CPU_TOP.U_IM.IMEM[0]);
         $display("pc = 0x4 : %x", SV_CPU_TOP.U_IM.IMEM[1]);
         $display("pc = 0x18c : %x", SV_CPU_TOP.U_IM.IMEM[99]);

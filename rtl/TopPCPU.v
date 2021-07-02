@@ -4,9 +4,16 @@
 `include "rtl/BlockMemory.v"
 `include "rtl/DistributedMemory.v"
 
-module Top (
+module TopPCPU (
   input clk,
   input reset,
+  input [31:0] inst_in,
+  output [31:0] PC_out,
+
+  input  [31:0] Data_in,
+  output [31:0] Addr_out,
+  output [31:0] Data_out,
+  output        mem_w,
   output test
 );
   wire [31:0] io_imem_addr;
@@ -31,6 +38,13 @@ module Top (
   wire [31:0] dMemPort_dmAddr_out;
   wire        dMemPort_dmMem_w;
 
+  assign iMemPort_imData = inst_in;
+  assign PC_out = iMemPort_imAddr;
+
+  assign dMemPort_dmData_in = Data_in;
+  assign Addr_out = dMemPort_dmAddr_out;
+  assign Data_out = dMemPort_dmData_out;
+  assign mem_w = dMemPort_dmMem_w;
 
   CPU U_CPU(.clock(clk),
             .reset(reset),
@@ -81,12 +95,12 @@ module Top (
             .dmMem_w(dMemPort_dmMem_w)
             );//TODO
 
-  IMem U_IM(.a(iMemPort_imAddr[11:2]),
-            .spo(iMemPort_imData));
+  // IMem U_IM(.a(iMemPort_imAddr[9:0]),
+  //           .spo(iMemPort_imData));
 
-  DMem U_DM(.addra(dMemPort_dmAddr_out[11:2]),
-            .wea(dMemPort_dmMem_w),
-            .dina(dMemPort_dmData_out),
-            .clka(~clk),
-            .douta(dMemPort_dmData_in));
+  // DMem U_DM(.addra(dMemPort_dmAddr_out[9:0]),
+  //           .wea(dMemPort_dmMem_w),
+  //           .dina(dMemPort_dmData_out),
+  //           .clka(~clk),
+  //           .douta(dMemPort_dmData_in));
 endmodule

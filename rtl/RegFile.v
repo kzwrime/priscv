@@ -11,11 +11,16 @@ module RegFile (
 
     integer ii;
     reg [31:0] regs[31:0];
-    always @(posedge clk) begin
+    initial begin
+        for(ii=0; ii<32; ii=ii+1)
+            regs[ii] <= 32'b0;
+    end
+    // always @(posedge clk) begin
+    always @(negedge clk) begin
         if(reset) begin
             $display("~~~regs reset~~~");
             for(ii=0; ii<32; ii=ii+1)
-                regs[ii] <= 0;
+                regs[ii] <= 32'b0;
         end
         else if(wen & (|regWAddr)) regs[regWAddr] <= regWData;
     end

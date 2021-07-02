@@ -20,7 +20,7 @@ module HazardUnit (
   output reg    IF_ID_flush
 );
 
-  // note: æœ€åçš„ if å…·æœ‰æœ€é«˜ä¼˜å…ˆçº§
+  // note: ×îºóµÄ if ¾ßÓĞ×î¸ßÓÅÏÈ¼¶
   always @(*) begin
     pcFromTaken   <= 0;  
     pcStall       <= 0; 
@@ -29,33 +29,33 @@ module HazardUnit (
     ID_EX_flush    <= 0;
     EX_MEM_flush   <= 0;  
     IF_ID_flush    <= 0;
-    // å‰ä¸€æ¡æŒ‡ä»¤æ˜¯ loadï¼Œåä¸€æ¡çš„ rs1/rs2 ä¾èµ–äºå‰ä¸€æ¡ä» mem è¯»å‡ºæ¥çš„å€¼ï¼Œ
-    // æ²¡æ³•ä¸åœé¡¿å‰é€’ï¼Œéœ€è¦è®© load ä¹‹åçš„æŒ‡ä»¤åœé¡¿ä¸€ä¸ªå‘¨æœŸï¼Œä»…å³ IF/ID å†²åˆ·
+    // Ç°Ò»ÌõÖ¸ÁîÊÇ load£¬ºóÒ»ÌõµÄ rs1/rs2 ÒÀÀµÓÚÇ°Ò»Ìõ´Ó mem ¶Á³öÀ´µÄÖµ£¬
+    // Ã»·¨²»Í£¶ÙÇ°µİ£¬ĞèÒªÈÃ load Ö®ºóµÄÖ¸ÁîÍ£¶ÙÒ»¸öÖÜÆÚ£¬½ö¼´ IF/ID ³åË¢
     if(ID_EX_memRead & (ID_EX_rd == rs1 || ID_EX_rd == rs2)) begin
       pcFromTaken <= 0;
       pcStall     <= 1;
       IF_ID_stall <= 1;
       ID_EX_flush <= 1;
     end
-    // åŒæ­¥ RAMï¼Œå‰ä¸€æ¡æŒ‡ä»¤æ˜¯ sb/shï¼Œåä¸€æ¡æŒ‡ä»¤æ˜¯ load/storeï¼Œ
-    // ç”±äº sb/sh éœ€è¦å…ˆè¯»å‡ºå†å†™å…¥ï¼Œå ç”¨ä¸¤ä¸ªå‘¨æœŸï¼Œéœ€è¦æŠŠä¹‹åçš„æŒ‡ä»¤åœä¸€ä¸ªå‘¨æœŸ
-    if(ID_EX_memAccess && EX_MEM_wen && EX_MEM_maskMode != 2'b10) begin
+    // Í¬²½ RAM£¬Ç°Ò»ÌõÖ¸ÁîÊÇ sb/sh£¬ºóÒ»ÌõÖ¸ÁîÊÇ load/store£¬
+    // ÓÉÓÚ sb/sh ĞèÒªÏÈ¶Á³öÔÙĞ´Èë£¬Õ¼ÓÃÁ½¸öÖÜÆÚ£¬ĞèÒª°ÑÖ®ºóµÄÖ¸ÁîÍ£Ò»¸öÖÜÆÚ
+    if(ID_EX_memAccess && EX_MEM_wen && (EX_MEM_maskMode == 2'b00 || EX_MEM_maskMode == 2'b01)) begin
       pcFromTaken  <= 0;
       pcStall      <= 1;
       IF_ID_stall  <= 1;
       ID_EX_stall  <= 1;
       EX_MEM_flush <= 1;
     end
-    // alu å¯¹äº branch é¢„æµ‹å¤±è´¥ï¼Œéœ€è¦è·³è½¬ï¼Œæ›´æ–°pcï¼Œå†²åˆ·å…¨éƒ¨æµæ°´çº¿
+    // alu ¶ÔÓÚ branch Ô¤²âÊ§°Ü£¬ĞèÒªÌø×ª£¬¸üĞÂpc£¬³åË¢È«²¿Á÷Ë®Ïß
     if(EX_MEM_taken) begin 
       pcFromTaken <= 1; // PC from MEM stage
       pcStall     <= 0; // PC from MEM stage\
       IF_ID_flush  <= 1;
       ID_EX_flush  <= 1;
       // EX_MEM_flush <= 1;
-      EX_MEM_flush <= 0; // CHANGE : match TODO 01 Execute çš„åˆ†æ”¯è·³è½¬æµæ°´çº¿å†²åˆ·æå‰ï¼Œ
-      // æ›¾ç»ä¸ºä» EX_MEM çš„æµæ°´çº¿å¯„å­˜å™¨ä¸­è¯»å‡º ex_mem_taken æ¥ç»™ Hazard åˆ¤æ–­å†²åˆ·ï¼Œ
-      // æ”¹ä¸ºåœ¨å†™å…¥ EX_MEM ä¹‹å‰ç›´æ¥ç»™ hazard ä¸”ä¸å†²åˆ· EX_MEM
+      EX_MEM_flush <= 0; // CHANGE : match TODO 01 Execute µÄ·ÖÖ§Ìø×ªÁ÷Ë®Ïß³åË¢ÌáÇ°£¬
+      // Ôø¾­Îª´Ó EX_MEM µÄÁ÷Ë®Ïß¼Ä´æÆ÷ÖĞ¶Á³ö ex_mem_taken À´¸ø Hazard ÅĞ¶Ï³åË¢£¬
+      // ¸ÄÎªÔÚĞ´Èë EX_MEM Ö®Ç°Ö±½Ó¸ø hazard ÇÒ²»³åË¢ EX_MEM
     end
   end
 

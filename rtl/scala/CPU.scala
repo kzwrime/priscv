@@ -334,7 +334,7 @@ class CPU extends Module {
   hazard.io.EX_MEM_maskMode := ex_mem_ctrl.io.data.mem_ctrl.maskMode
   hazard.io.EX_MEM_wen      := ex_mem_ctrl.io.data.mem_ctrl.memWrite
 
-  val dmem_sb_sh = ex_mem_ctrl.io.data.mem_ctrl.memWrite && (ex_mem_ctrl.io.data.mem_ctrl.maskMode(1))
+  val dmem_sb_sh = ex_mem_ctrl.io.data.mem_ctrl.memWrite && (~ex_mem_ctrl.io.data.mem_ctrl.maskMode(0))
   val old_dmem_sb_sh     = RegInit(false.B)
       old_dmem_sb_sh    := dmem_sb_sh
   val old_dmem_addr      = RegNext(ex_mem.io.data.result)

@@ -15,7 +15,7 @@ module DMemPort (
   input memRead,
   input memWrite,
   input maskMode,
-  input sext, // ç¬¦å·æ‰©å±•
+  input sext, // ·ûºÅÀ©Õ¹
   output reg [31:0] readData,
   
   output reg [31:0] requestAddr,

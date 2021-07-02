@@ -1,7 +1,7 @@
 `timescale 1ps/1ps
 `define CLOCK_TIME_HALF 50
 `include "rtl/Top.v"
-`define HEXFILE "./data/Test_37_Instr2.dat"
+`define HEXFILE ".verilog"
 
 module tb_top4 ();
     
