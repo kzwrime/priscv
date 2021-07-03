@@ -43,3 +43,5 @@ $(BUILD_DIR)/%.verilog: $(OBJ_DIR)/%.o
 
 clean:
 	rm -rf $(BUILD_DIR)
+
+# note _exit: --specs=nosys.specs

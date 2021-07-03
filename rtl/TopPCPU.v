@@ -14,6 +14,7 @@ module TopPCPU (
   output [31:0] Addr_out,
   output [31:0] Data_out,
   output        mem_w,
+  output        mem_r,
   output test
 );
   wire [31:0] io_imem_addr;
@@ -37,6 +38,7 @@ module TopPCPU (
   wire [31:0] dMemPort_dmData_out;
   wire [31:0] dMemPort_dmAddr_out;
   wire        dMemPort_dmMem_w;
+  wire        dMemPort_dmMem_r;
 
   assign iMemPort_imData = inst_in;
   assign PC_out = iMemPort_imAddr;
@@ -92,7 +94,8 @@ module TopPCPU (
             .dmData_in(dMemPort_dmData_in),
             .dmData_out(dMemPort_dmData_out),
             .dmAddr_out(dMemPort_dmAddr_out),
-            .dmMem_w(dMemPort_dmMem_w)
+            .dmMem_w(dMemPort_dmMem_w),
+            .dmMem_r(dMemPort_dmMem_r)
             );//TODO
 
   // IMem U_IM(.a(iMemPort_imAddr[9:0]),

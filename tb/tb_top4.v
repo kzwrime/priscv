@@ -52,7 +52,7 @@ module tb_top4 ();
     integer i;
     integer cycle = 0;
     always @(negedge clk) begin
-        #1
+        #2
         FILE = $fopen("./tmp/tb_top4.md", "a");
         if(SV_CPU_TOP.U_CPU.pc == 32'b0) $display();
         $write("\npc %x,\t instr %x\t\t\n", SV_CPU_TOP.U_CPU.pc, SV_CPU_TOP.io_imem_instr);

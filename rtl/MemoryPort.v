@@ -21,72 +21,67 @@ module DMemPort (
   input memRead,
   input memWrite,
   input [1:0] maskMode,
-  input sext, // ·ûºÅÀ©Õ¹
+  input sext,
   output reg [31:0] readData,
   output reg good,
 
   input [31:0] readBack,
 
   input  [31:0] dmData_in,
-  output reg [31:0] dmData_out,
+  output [31:0] dmData_out,
   output [31:0] dmAddr_out,
-  output reg dmMem_w
+  output reg dmMem_w,
+  output reg dmMem_r
 );
   assign dmAddr_out = addr;
   reg [31:0] tmpWriteData;
-  always @(clk, valid, addr, writeData, memRead, memWrite, maskMode, sext) begin
+  // assign dmData_out = tmpWriteData & readBack;
+  assign dmData_out = tmpWriteData;
+  // always @(clk, valid, addr, writeData, memRead, memWrite, maskMode, sext) begin
+  always @(*) begin
     readData <= 32'b0;
-    tmpWriteData <= 32'b0;
-    dmData_out <= writeData;
+    // tmpWriteData <= 32'b0;
+    // dmData_out <= writeData;
     if(valid & (memRead | memWrite)) begin
       if(memRead & memWrite) begin
         dmMem_w <= 0;
+        dmMem_r <= 0;
         $display("~~~DMem Port error~~~");
-        good <= 0;
+        good <= 0; 
       end else if(memRead) begin
         good <= 1;
         dmMem_w <= 0;
-        // readData <= 32'b0;
-        // if(maskMode == 2'b00) begin
-        //   case(addr[1:0])
-        //   2'b00:  readData <= {{24{sext & dmData_in[7]}},  dmData_in[7:0]};
-        //   2'b01:  readData <= {{24{sext & dmData_in[15]}}, dmData_in[15:8]};
-        //   2'b10:  readData <= {{24{sext & dmData_in[23]}}, dmData_in[23:16]};
-        //   2'b11:  readData <= {{24{sext & dmData_in[31]}}, dmData_in[31:24]};
-        //   endcase
-        // end
-        // else if(maskMode == 2'b01) begin
-        //   case(addr[1])
-        //   1'b0: readData <= {{16{ sext & dmData_in[15]}}, dmData_in[15:0]};
-        //   1'b1: readData <= {{16{ sext & dmData_in[31]}}, dmData_in[31:16]};
-        //   endcase
-        // end
-        // else begin
-          readData <= dmData_in;
-        // end
+        readData <= 32'b0;
+        dmMem_r <= 1;
       end else if(memWrite) begin
           good <= 1;
           dmMem_w <= 1;
-          // $display("~~~DMEM write~~~mask:%b addr:%x wData:%x", maskMode, addr, writeData);
-          // if(maskMode == 2'b00) begin
-          //   case(addr[1:0])
-          //   2'b00:  tmpWriteData <= {24'b1, writeData[7:0]};
-          //   2'b01:  tmpWriteData <= {16'b1, writeData[7:0], 8'b1};
-          //   2'b10:  tmpWriteData <= {8'b1, writeData[7:0], 16'b1};
-          //   2'b11:  tmpWriteData <= {writeData[7:0], 24'b1};
-          //   endcase
-          // end else if(maskMode == 2'b01) begin
-          //   case(addr[1])
-          //   1'b0: tmpWriteData <= {16'b1, writeData[15:0]};
-          //   1'b1: tmpWriteData <= {writeData[15:0], 16'b1};
-          //   endcase
-          // end else if(maskMode == 2'b10) begin
-          //   tmpWriteData <= writeData;
-          // end
+          dmMem_r <= 0;
+          // tmpWriteData <= writeData;
+          $display("~~~DMEM write~~~mask:%b addr:%x wData:%x", maskMode, addr, writeData);
           // dmData_out <= tmpWriteData & readBack;
-          dmData_out <= writeData;
+          // dmData_out <= writeData;
         end
-    end else begin good <= 0; readData <= 0; dmMem_w <= 0; end
+    end else begin good <= 0; readData <= 0; dmMem_w <= 0; dmMem_r <= 0; end
+
+    // always
+    if(maskMode == 2'b00) begin
+      case(addr[1:0])
+      2'b00:  begin readData <= {{24{sext & dmData_in[7]}},  dmData_in[7:0]};   tmpWriteData <= {readBack[31:8], writeData[7:0]};       end
+      2'b01:  begin readData <= {{24{sext & dmData_in[15]}}, dmData_in[15:8]};  tmpWriteData <= {readBack[31:16], writeData[7:0], readBack[7:0]}; end
+      2'b10:  begin readData <= {{24{sext & dmData_in[23]}}, dmData_in[23:16]}; tmpWriteData <= {readBack[31:24], writeData[7:0], readBack[15:0]}; end
+      2'b11:  begin readData <= {{24{sext & dmData_in[31]}}, dmData_in[31:24]}; tmpWriteData <= {writeData[7:0], readBack[23:0]};       end
+      endcase
+    end
+    else if(maskMode == 2'b01) begin
+      case(addr[1])
+      1'b0: begin readData <= {{16{ sext & dmData_in[15]}}, dmData_in[15:0]};  tmpWriteData <= {readBack[31:16], writeData[15:0]}; end
+      1'b1: begin readData <= {{16{ sext & dmData_in[31]}}, dmData_in[31:16]}; tmpWriteData <= {writeData[15:0], readBack[15:0]}; end
+      endcase
+    end else begin
+      readData <= dmData_in;
+      tmpWriteData <= writeData;
+    end
   end
 
 endmodule

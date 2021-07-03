@@ -1,11 +1,11 @@
-SOURCE_NOEXT := ./tb/tb_top5
+SOURCE_NOEXT := ./tb/tb_top4
 SOURCE := ${SOURCE_NOEXT}.v
 TARGET := ${SOURCE_NOEXT}.o
 
 # 1, 4, 6
 # TEST_HEX := ./riscv-tests-s/origin/build/riscv32_sim6.verilog
-# TEST_HEX := ./data/Test_37_Instr2.dat
-TEST_HEX := ./data/second/SOC_CPU_DEMO37.dat
+TEST_HEX := ./data/Test_37_Instr2.dat
+# TEST_HEX := ./data/second/SOC_CPU_DEMO37.dat
 
 test1:
 	if [!{-f tmp}]; then mkdir tmp; fi
@@ -30,7 +30,7 @@ test2:
 clean:
 	make -C ./riscv-tests-s/origin clean
 	rm -f ${SOURCE_NOEXT}.md ${SOURCE_NOEXT}.vcd ${TARGET}
-	rm ./tmp -rf
+	rm ./tmp/* -rf
 
 modify:
 	sed -i '/`ifndef SYNTHESIS/,/`endif \/\/ SYNTHESIS/d' rtl/CPU.v
