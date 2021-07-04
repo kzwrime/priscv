@@ -8,6 +8,8 @@ RISC-V 五级流水线
 
 ![schematic](./img/schematic.svg)
 
+![device_addr](./img/device_addr.svg)
+
 ## TODO
 
 - [x] [01] Execute 的分支跳转流水线冲刷提前，目前为从 EX_MEM 的流水线寄存器中读出 ex_mem_taken 来给 Hazard 判断冲刷，应改进为在写入 EX_MEM 之前直接给 hazard 且不冲刷 EX_MEM

@@ -14,8 +14,8 @@ module RegFile (
     initial begin
         for(ii=0; ii<32; ii=ii+1)
             regs[ii] <= 32'b0;
-        regs[2] <= 32'h0000FFFF;    // initial stack pointer
-        regs[3] <= 32'h00004FFF;    // initial global pointer
+        // regs[2] <= 32'h0000FFFF;    // initial stack pointer
+        // regs[3] <= 32'h00004FFF;    // initial global pointer
     end
     // always @(posedge clk) begin
     always @(negedge clk) begin
@@ -23,8 +23,8 @@ module RegFile (
             $display("~~~regs reset~~~");
             for(ii=0; ii<32; ii=ii+1)
                 regs[ii] <= 32'b0;
-            regs[2] <= 32'h0000FFFF;    // initial stack pointer
-            regs[3] <= 32'h00004FFF;    // initial global pointer
+            // regs[2] <= 32'h0000FFFF;    // initial stack pointer
+            // regs[3] <= 32'h00004FFF;    // initial global pointer
         end
         else if(wen & (|regWAddr)) regs[regWAddr] <= regWData;
     end
