@@ -1,4 +1,4 @@
-rm ./fpga/* -rf
+rm ./fpga -rf
 mkdir ./fpga
 cp -r ./rtl ./fpga
 cp -r ./tb ./fpga

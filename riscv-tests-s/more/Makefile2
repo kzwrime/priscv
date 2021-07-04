@@ -4,19 +4,20 @@ BUILD_DIR := ./build
 OBJ_DIR := $(BUILD_DIR)
 
 # Compilation flags
-AS := riscv32-unknown-elf-as
-DUMP := riscv32-unknown-elf-objdump
-COPY := riscv32-unknown-elf-objcopy
-CFLAGS := -march=rv32i -mabi=ilp32
-DUMPFLAGS := -D
+GCC  := riscv-none-embed-gcc
+AS   := riscv-none-embed-as
+DUMP := riscv-none-embed-objdump
+COPY := riscv-none-embed-objcopy
+CFLAGS := -march=rv32i -mabi=ilp32 --specs=nosys.specs
+DUMPFLAGS := -d
 VCOPYFLAGS := -O verilog
-# VCOPYFLAGS := -O verilog
 
 # Files to be compiled
-SRCS := $(wildcard $(SRC_DIR)/*.asm)
-OBJS := $(SRCS:$(SRC_DIR)/%.asm=$(OBJ_DIR)/%.o)
-DUMPS := $(OBJS:$(OBJ_DIR)/%.o=$(BUILD_DIR)/%.dump)
-VCOPYS := $(OBJS:$(OBJ_DIR)/%.o=$(BUILD_DIR)/%.verilog)
+SCR      := $(wildcard $(SRC_DIR)/*.c)
+SRCS_ASM := $(wildcard $(SRC_DIR)/*.asm)
+OBJS     := $(SRCS:$(SRC_DIR)/%.asm=$(OBJ_DIR)/%.o)
+DUMPS    := $(OBJS:$(OBJ_DIR)/%.o=$(BUILD_DIR)/%.dump)
+VCOPYS   := $(OBJS:$(OBJ_DIR)/%.o=$(BUILD_DIR)/%.verilog)
 
 # Don't remove *.o files automatically
 .SECONDARY: $(OBJS)

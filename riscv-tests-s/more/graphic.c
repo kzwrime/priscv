@@ -1,8 +1,8 @@
-#define VRAM_ADDR 0xd0000000
+#define VRAM_ADDR 0x0d000000
 #define PIXEL_SIZE 2
-#define VRAM_PALATTE_ADDR 0xc0000000
-#define XSIZE 1024  // 640 valid
-#define YSIZE 512   // 480 valid
+#define VRAM_PALATTE_ADDR 0x0c000000
+#define XSIZE 1024 // 640 valid
+#define YSIZE 512  // 480 valid
 #define XSIZE_VALID 640
 #define YSIZE_VALID 480
 
@@ -10,8 +10,8 @@ typedef unsigned char *VRAM_TYPE;
 typedef unsigned char COLOR_TYPE;
 
 void init_palette(void);
-void boxfill8(VRAM_TYPE vram, int xsize, COLOR_TYPE c, int x0, int y0,
-              int x1, int y1);
+void boxfill8(VRAM_TYPE vram, int xsize, COLOR_TYPE c, int x0, int y0, int x1,
+              int y1);
 void hlt_t(int t) {
   for (int i = 0; i < t; i++) {
   }
@@ -22,6 +22,7 @@ void hlt(void) {
   while (1) {
     i = i++;
   }
+  return;
 }
 
 #define COL8_000000 0
@@ -60,15 +61,15 @@ void init_palatte() {
       0x0099, // 14 暗蓝
       0x0aaa  // 15 暗灰
   };
-  unsigned short *vram_palatte_addr = VRAM_PALATTE_ADDR;
+  unsigned short *vram_palatte_addr = (unsigned short *)VRAM_PALATTE_ADDR;
   for (int i = 0; i < 15; i++) {
     vram_palatte_addr[i] = table[i];
   }
   return;
 }
 
-void boxfill8(VRAM_TYPE vram, int xsize, COLOR_TYPE c, int x0, int y0,
-              int x1, int y1) {
+void boxfill8(VRAM_TYPE vram, int xsize, COLOR_TYPE c, int x0, int y0, int x1,
+              int y1) {
   int x, y;
   for (y = y0; y <= y1; y++) {
     for (x = x0; x <= x1; x++)
@@ -81,8 +82,9 @@ void main() {
   char *p;
   init_palatte();
   p = (char *)VRAM_ADDR;
-  boxfill8(p, 320, COL8_FF0000, 20, 20, 120, 120);
-  boxfill8(p, 320, COL8_00FF00, 70, 50, 170, 150);
-  boxfill8(p, 320, COL8_0000FF, 120, 80, 220, 180);
-  hlt();
+  while (1) {
+    boxfill8(p, 320, COL8_FF0000, 20, 20, 120, 120);
+    boxfill8(p, 320, COL8_00FF00, 70, 50, 170, 150);
+    boxfill8(p, 320, COL8_0000FF, 120, 80, 220, 180);
+  }
 }

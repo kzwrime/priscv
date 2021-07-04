@@ -40,12 +40,13 @@ module DMemPort (
   // always @(clk, valid, addr, writeData, memRead, memWrite, maskMode, sext) begin
   always @(*) begin
     readData <= 32'b0;
+    good <= 0;
+    dmMem_w <= 0;
+    dmMem_r <= 1;
     // tmpWriteData <= 32'b0;
     // dmData_out <= writeData;
     if(valid & (memRead | memWrite)) begin
       if(memRead & memWrite) begin
-        dmMem_w <= 0;
-        dmMem_r <= 0;
         $display("~~~DMem Port error~~~");
         good <= 0; 
       end else if(memRead) begin
