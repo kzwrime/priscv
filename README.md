@@ -51,7 +51,7 @@ riscv-random-asm 10
 
 ### pyriscv 模拟
 
-### 全自动对比验错
+### 对比验错
 
 ![image-20210601212356684](README.assets/image-20210601212356684.png)
 
