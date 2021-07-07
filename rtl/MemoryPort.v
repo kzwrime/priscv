@@ -34,11 +34,11 @@ module DMemPort (
   output reg dmMem_r
 );
   assign dmAddr_out = addr;
-  reg [31:0] tmpWriteData;
+  reg [31:0] tmpWriteData = 32'b0;
   // assign dmData_out = tmpWriteData & readBack;
   assign dmData_out = tmpWriteData;
-  // always @(clk, valid, addr, writeData, memRead, memWrite, maskMode, sext) begin
-  always @(*) begin
+  always @(clk, valid, addr, writeData, memRead, memWrite, maskMode, sext) begin
+  // always @(*) begin
     readData <= 32'b0;
     good <= 0;
     dmMem_w <= 0;
@@ -64,8 +64,9 @@ module DMemPort (
           // dmData_out <= writeData;
         end
     end else begin good <= 0; readData <= 0; dmMem_w <= 0; dmMem_r <= 0; end
-
-    // always
+  end
+  always @(*) begin
+    readData <= dmData_in;
     if(maskMode == 2'b00) begin
       case(addr[1:0])
       2'b00:  begin readData <= {{24{sext & dmData_in[7]}},  dmData_in[7:0]};   tmpWriteData <= {readBack[31:8], writeData[7:0]};       end
@@ -80,7 +81,6 @@ module DMemPort (
       1'b1: begin readData <= {{16{ sext & dmData_in[31]}}, dmData_in[31:16]}; tmpWriteData <= {writeData[15:0], readBack[15:0]}; end
       endcase
     end else begin
-      readData <= dmData_in;
       tmpWriteData <= writeData;
     end
   end

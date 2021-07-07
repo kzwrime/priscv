@@ -19,7 +19,7 @@ module tb_top4 ();
     always @(*) begin
         #`CLOCK_TIME_HALF clk <= ~clk;
         counter <= counter + 1;
-        if(counter >= 200) begin
+        if(counter >= 3000) begin
             $display("cycle: %d", cycle);
             $finish;
         end
@@ -43,7 +43,7 @@ module tb_top4 ();
         $display(`HEXFILE);
         
         $readmemh(`HEXFILE, SV_CPU_TOP.U_IM.IMEM);
-        $readmemh("./data/second/D_DEMO31.coe", SV_CPU_TOP.U_DM.DMEM);
+        // $readmemh("./data/second/D_DEMO31.coe", SV_CPU_TOP.U_DM.DMEM);
         
         $display("pc = 0x0 : %x", SV_CPU_TOP.U_IM.IMEM[0]);
         $display("pc = 0x4 : %x", SV_CPU_TOP.U_IM.IMEM[1]);
@@ -61,12 +61,13 @@ module tb_top4 ();
             // $fwrite(FILE, "%x\n", SV_CPU_TOP.U_CPU.pc);
             $fwrite(FILE, "%x\n", SV_CPU_TOP.U_CPU.mem_wb_io_data_pc);
             // $fwrite(FILE, "%x\n",SV_CPU_TOP.io_imem_instr);
-            for(i=0; i<32; i=i+4)
-                $fwrite(FILE, "%x %x %x %x\n", SV_CPU_TOP.U_CPU.regs.regs[i], SV_CPU_TOP.U_CPU.regs.regs[i+1], SV_CPU_TOP.U_CPU.regs.regs[i+2], SV_CPU_TOP.U_CPU.regs.regs[i+3]);
-            $fwrite(FILE, "\n");
-            for(i=0; i<8; i=i+4)
-                $fwrite(FILE, "%h %h %h %h\n", SV_CPU_TOP.U_DM.DMEM[i], SV_CPU_TOP.U_DM.DMEM[i+1], SV_CPU_TOP.U_DM.DMEM[i+2], SV_CPU_TOP.U_DM.DMEM[i+3]);
-            $fwrite(FILE, "\n");
+            // for(i=0; i<32; i=i+4)
+                // $fwrite(FILE, "%x %x %x %x\n", SV_CPU_TOP.U_CPU.regs.regs[i], SV_CPU_TOP.U_CPU.regs.regs[i+1], SV_CPU_TOP.U_CPU.regs.regs[i+2], SV_CPU_TOP.U_CPU.regs.regs[i+3]);
+            // $fwrite(FILE, "\n");
+            // for(i=0; i<8; i=i+4)
+                // $fwrite(FILE, "%h %h %h %h\n", SV_CPU_TOP.U_DM.DMEM[i], SV_CPU_TOP.U_DM.DMEM[i+1], SV_CPU_TOP.U_DM.DMEM[i+2], SV_CPU_TOP.U_DM.DMEM[i+3]);
+            // $fwrite(FILE, "\n");
+            $fwrite(FILE, "%x %x\n", SV_CPU_TOP.device_io_addr, SV_CPU_TOP.device_io_write_data);
             cycle = cycle + 1;
         end
         $fclose(FILE);

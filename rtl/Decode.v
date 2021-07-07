@@ -42,15 +42,15 @@ assign                   {branch, jump, memRead, memWrite, regWrite, toReg, resu
 always @(*) begin
   $write("%x", instr);
   case(instr[6:0])
-    `OPCODE_LUI    :  begin signals <= DEC_LUI;    $display("~~~decode LUI");  end
-    `OPCODE_AUIPC  :  begin signals <= DEC_AUIPC;  $display("~~~decode AUIPC");  end
-    `OPCODE_JAL    :  begin signals <= DEC_JAL;    $display("~~~decode JAL");  end
-    `OPCODE_JALR   :  begin signals <= DEC_JALR;   $display("~~~decode JALR");  end
-    `OPCODE_BRANCH :  begin signals <= DEC_BRANCH; $display("~~~decode BRANCH");  end
-    `OPCODE_LOAD   :  begin signals <= DEC_LOAD;   $display("~~~decode LOAD");  end
-    `OPCODE_STORE  :  begin signals <= DEC_STORE;  $display("~~~decode STORE");  end
-    `OPCODE_ALUI   :  begin signals <= DEC_ALUI;   $display("~~~decode ALUI");  end
-    `OPCODE_ALUR   :  begin signals <= DEC_ALUR;   $display("~~~decode ALUR");  end
+    `OPCODE_LUI    :  begin signals <= DEC_LUI;    /* $display("~~~decode LUI");   */  end
+    `OPCODE_AUIPC  :  begin signals <= DEC_AUIPC;  /* $display("~~~decode AUIPC"); */  end
+    `OPCODE_JAL    :  begin signals <= DEC_JAL;    /* $display("~~~decode JAL");   */  end
+    `OPCODE_JALR   :  begin signals <= DEC_JALR;   /* $display("~~~decode JALR");  */  end
+    `OPCODE_BRANCH :  begin signals <= DEC_BRANCH; /* $display("~~~decode BRANCH");*/  end
+    `OPCODE_LOAD   :  begin signals <= DEC_LOAD;   /* $display("~~~decode LOAD");  */  end
+    `OPCODE_STORE  :  begin signals <= DEC_STORE;  /* $display("~~~decode STORE"); */  end
+    `OPCODE_ALUI   :  begin signals <= DEC_ALUI;   /* $display("~~~decode ALUI");  */  end
+    `OPCODE_ALUR   :  begin signals <= DEC_ALUR;   /* $display("~~~decode ALUR");  */  end
     // `OPCODE_FENCE  :  signals <= DEC_FENCE;
     // `OPCODE_SYSTEM :  signals <= DEC_SYSTEM;
     default        :  begin signals <= DEC_INVALID; $display("~~~decode error~~~%x", instr); end

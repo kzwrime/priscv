@@ -1,11 +1,11 @@
-SOURCE_NOEXT := ./tb/tb_top4
+SOURCE_NOEXT := ./tb/tb_top5
 SOURCE := ${SOURCE_NOEXT}.v
 TARGET := ${SOURCE_NOEXT}.o
 
 # 1, 4, 6
 # TEST_HEX := ./riscv-tests-s/origin/build/riscv32_sim6.verilog
-TEST_HEX := ./data/Test_37_Instr2.dat
-# TEST_HEX := ./data/second/SOC_CPU_DEMO37.dat
+# TEST_HEX := ./data/Test_37_Instr2.dat
+TEST_HEX := /home/rime/code/riscv/riscvprogram/src/NPCPU_3/NPCPU_3.coe
 
 test1:
 	if [!{-f tmp}]; then mkdir tmp; fi
